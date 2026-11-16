@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Platzwerk Statistik</title>
+<style>
+@property --erx{syntax:'<angle>';inherits:false;initial-value:0deg}
+@property --ery{syntax:'<angle>';inherits:false;initial-value:0deg}
+*{box-sizing:border-box;margin:0;padding:0;animation-play-state:paused!important}
+html,body{background:#000;overflow:hidden;width:100%;height:100%}
+:root{--blue:#4f9dff;--blue2:#8fc4ff;--yel:#ffc74a;--yel2:#ffe29a;--dim:rgba(214,226,255,.62);--dim2:rgba(214,226,255,.4)}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:radial-gradient(120% 90% at 70% 0%,#0a1330 0%,#050814 55%,#03050b 100%);
+  color:#f4f7ff;font-family:'Inter',sans-serif;font-feature-settings:'tnum','ss01','cv11';--rx:0deg;--ry:0deg;--fy:0px;transform-origin:0 0}
+.port #stage{width:1080px;height:1920px}
+
+/* ---------- Hintergrund ---------- */
+.orb{position:absolute;left:0;top:0;border-radius:50%;pointer-events:none}
+#o1{width:1500px;height:1500px;background:radial-gradient(circle,rgba(42,104,255,.50),rgba(42,104,255,.14) 40%,rgba(42,104,255,0) 68%)}
+#o2{width:1200px;height:1200px;background:radial-gradient(circle,rgba(74,60,220,.34),rgba(60,60,210,.1) 42%,rgba(60,60,210,0) 68%)}
+#o3{width:820px;height:820px;background:radial-gradient(circle,rgba(255,190,70,.26),rgba(255,180,60,.07) 45%,rgba(255,180,60,0) 68%)}
+#o4{width:380px;height:380px;background:radial-gradient(circle at 35% 30%,rgba(170,210,255,.95),rgba(79,157,255,.75) 35%,rgba(40,90,230,.25) 62%,rgba(40,90,230,0) 72%)}
+#o5{width:250px;height:250px;background:radial-gradient(circle at 35% 30%,rgba(255,236,180,.95),rgba(255,199,74,.7) 38%,rgba(255,150,40,.18) 62%,rgba(255,150,40,0) 72%)}
+#o6{width:170px;height:170px;background:radial-gradient(circle at 35% 30%,rgba(200,225,255,.9),rgba(110,170,255,.6) 40%,rgba(60,110,240,0) 72%)}
+#ring1{width:620px;height:620px;border:2px solid rgba(160,195,255,.16)}
+#ring2{width:340px;height:340px;border:1.5px solid rgba(255,210,120,.2)}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(0,0,0,0) 45%,rgba(0,0,6,.62) 100%);pointer-events:none}
+#fade{position:absolute;inset:0;background:#000;pointer-events:none;z-index:50}
+
+/* ---------- Glas ---------- */
+.gl{position:relative;border-radius:36px;
+  background:linear-gradient(140deg,rgba(255,255,255,.125),rgba(255,255,255,.04) 46%,rgba(110,150,255,.06));
+  backdrop-filter:blur(34px) saturate(175%);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(255,255,255,.05),inset 0 0 70px rgba(110,150,255,.07),0 44px 90px -24px rgba(0,0,6,.7),0 10px 26px rgba(0,0,6,.28)}
+.gl::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(112deg,rgba(255,255,255,.17) 0%,rgba(255,255,255,0) 30%,rgba(255,255,255,0) 70%,rgba(255,255,255,.06) 100%);
+  background-size:220% 100%;background-position:var(--shx,30%) 0}
+.gl.y{background:linear-gradient(140deg,rgba(255,206,100,.2),rgba(255,199,74,.05) 50%,rgba(255,255,255,.04));border-color:rgba(255,214,130,.3);
+  box-shadow:inset 0 1px 0 rgba(255,236,190,.4),inset 0 0 70px rgba(255,190,70,.1),0 44px 90px -24px rgba(0,0,6,.7),0 0 70px -10px rgba(255,190,70,.22)}
+.t{transform:perspective(1700px) translateY(calc(var(--fy)*var(--fk,1))) rotateX(calc(var(--rx)*var(--k,1) + var(--erx))) rotateY(calc(var(--ry)*var(--k,1) + var(--ery)))}
+.tile{border-radius:24px;background:linear-gradient(150deg,rgba(255,255,255,.1),rgba(255,255,255,.035));border:1px solid rgba(255,255,255,.1);box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+
+/* ---------- Animation ---------- */
+.a{animation:in 1.25s cubic-bezier(.16,1,.3,1) both,out .7s cubic-bezier(.6,0,.85,.25) forwards;
+  animation-delay:calc((var(--s) + var(--d,0))*1s),calc((var(--e) - .78 + var(--x,0))*1s)}
+@keyframes in{from{opacity:0;translate:0 48px;scale:.96;filter:blur(18px);--erx:16deg}to{opacity:1;translate:0 0;scale:1;filter:none;--erx:0deg}}
+@keyframes out{to{opacity:0;translate:0 -36px;scale:1.025;filter:blur(14px);--erx:-9deg}}
+.a.l{animation-name:inl,out}
+@keyframes inl{from{opacity:0;translate:-70px 0;filter:blur(16px);--ery:-18deg}to{opacity:1;translate:0 0;filter:none;--ery:0deg}}
+.a.z{animation-name:inz,out;animation-duration:1.7s,.7s}
+@keyframes inz{from{opacity:0;scale:.82;filter:blur(26px)}to{opacity:1;scale:1;filter:none}}
+.gw{animation:gw 1.5s cubic-bezier(.2,.9,.25,1) both;animation-delay:calc((var(--s) + var(--d,0))*1s)}
+@keyframes gw{from{width:0}}
+.gh{animation:gh 1.5s cubic-bezier(.2,.9,.25,1) both;animation-delay:calc((var(--s) + var(--d,0))*1s)}
+@keyframes gh{from{height:0}}
+.seg{animation:seg 1.3s cubic-bezier(.3,.8,.3,1) both;animation-delay:calc((var(--s) + var(--d,0))*1s)}
+@keyframes seg{from{stroke-dasharray:0 1000}}
+.draw{stroke-dasharray:1 1;animation:draw 2.6s cubic-bezier(.4,.1,.3,1) both;animation-delay:calc((var(--s) + var(--d,0))*1s)}
+@keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.fi{animation:fi 1.2s ease both;animation-delay:calc((var(--s) + var(--d,0))*1s)}
+@keyframes fi{from{opacity:0}}
+.pop{animation:pop .9s cubic-bezier(.2,1.3,.4,1) both;animation-delay:calc((var(--s) + var(--d,0))*1s)}
+@keyframes pop{from{opacity:0;scale:.3}}
+
+/* ---------- Szenen-Grundgerüst ---------- */
+.scene{position:absolute;inset:0;padding:78px 110px 118px;display:none;flex-direction:column}
+.scene.on{display:flex}
+.eb{font-size:22px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--blue2);display:flex;align-items:center;gap:16px}
+.eb::before{content:'';width:34px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--yel),rgba(255,199,74,.2))}
+h2{font-family:'Inter Display','Inter',sans-serif;font-size:70px;font-weight:700;letter-spacing:-.025em;line-height:1.08;margin-top:14px}
+.body{flex:1;display:flex;margin-top:38px;min-height:0}
+.num{font-family:'Inter Display','Inter',sans-serif;font-weight:700;letter-spacing:-.03em}
+.yt{background:linear-gradient(180deg,#ffe7a8,#ffc74a 55%,#f5a52a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.wt{background:linear-gradient(180deg,#fff 20%,#b9d2ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.bt{background:linear-gradient(180deg,#b9d8ff,#4f9dff);-webkit-background-clip:text;background-clip:text;color:transparent}
+#foot{position:absolute;left:110px;right:110px;bottom:38px;display:flex;justify-content:space-between;align-items:center;font-size:18px;color:var(--dim2);letter-spacing:.02em;z-index:5}
+#foot img{height:46px;opacity:.9}
+#prog{position:absolute;left:0;bottom:0;height:5px;background:linear-gradient(90deg,var(--blue),var(--blue2) 60%,var(--yel));box-shadow:0 0 18px rgba(79,157,255,.8);z-index:6}
+
+/* ---------- S1 Titel ---------- */
+#s1{align-items:center;justify-content:center;text-align:center;padding-bottom:78px}
+#s1 .logo{width:470px;margin-bottom:54px}
+#s1 .eb{font-size:26px;letter-spacing:.5em;color:#fff;gap:26px;padding-left:.5em}
+#s1 .eb::before,#s1 .eb::after{content:'';width:90px;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(255,199,74,0),var(--yel))}
+#s1 .eb::after{background:linear-gradient(270deg,rgba(255,199,74,0),var(--yel))}
+#s1 h1{font-family:'Inter Display','Inter',sans-serif;font-size:168px;font-weight:800;letter-spacing:-.04em;line-height:1;margin:34px 0 50px}
+#s1 h1 span{display:inline-block}
+#s1 .pill{padding:20px 44px;border-radius:60px;font-size:30px;color:#e6eeff}
+#s1 .pill b{color:var(--yel);font-weight:600}
+
+/* ---------- S2 Gesamt ---------- */
+#s2 .body{flex-direction:column;justify-content:center;align-items:center;margin-top:0}
+.hero{display:flex;align-items:baseline;gap:34px}
+.hero .big{font-size:330px;line-height:.95;font-weight:800}
+.hero .unit{font-size:96px;font-weight:700;font-family:'Inter Display';letter-spacing:-.02em}
+.row{display:flex;gap:30px}
+.kpi{padding:30px 44px 34px;min-width:440px}
+.kpi small{display:block;font-size:24px;color:var(--dim)}
+.kpi b{display:block;font-size:78px;margin-top:6px}
+.kpi .tr{height:8px;border-radius:8px;background:rgba(255,255,255,.1);margin-top:18px;overflow:hidden}
+.kpi .tr i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#2f6ee8,var(--blue2));box-shadow:0 0 16px rgba(79,157,255,.8)}
+.kpi.y .tr i{background:linear-gradient(90deg,#f5a52a,var(--yel2));box-shadow:0 0 16px rgba(255,199,74,.8)}
+
+/* ---------- Säulen-Chart ---------- */
+.chart{flex:1;padding:96px 56px 92px 104px;display:flex}
+.plot{position:relative;flex:1;display:flex;align-items:flex-end;gap:14px}
+.gridl{position:absolute;left:-12px;right:0;height:1px;background:rgba(255,255,255,.09)}
+.gridl span{position:absolute;right:calc(100% + 14px);top:-13px;font-size:20px;color:var(--dim2)}
+.gridl.base{background:rgba(255,255,255,.3)}
+.col{position:relative;flex:1;height:100%;display:flex;align-items:flex-end}
+.col i{display:block;width:100%;border-radius:12px 12px 4px 4px;background:linear-gradient(180deg,#a8d0ff 0%,#4f9dff 30%,rgba(47,110,232,.55) 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 1px 0 0 rgba(255,255,255,.18),0 0 26px rgba(79,157,255,.4)}
+.col.pk i{background:linear-gradient(180deg,#fff0c4 0%,#ffc74a 28%,rgba(245,165,42,.6) 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 0 44px rgba(255,199,74,.65)}
+.col span{position:absolute;top:calc(100% + 14px);left:50%;translate:-50% 0;font-size:19px;color:var(--dim)}
+.col em{position:absolute;top:calc(100% + 44px);left:50%;translate:-50% 0;font-size:20px;font-weight:700;font-style:normal;color:#fff}
+.call{position:absolute;bottom:calc(100% + 16px);left:50%;translate:-50% 0;white-space:nowrap;padding:10px 22px;border-radius:40px;font-size:26px;font-weight:700;color:#1a1204;
+  background:linear-gradient(180deg,#ffe7a8,#ffc74a);box-shadow:0 0 40px rgba(255,199,74,.55),inset 0 1px 0 #fff}
+
+/* ---------- S4 Fraktionen ---------- */
+#s4 .body{gap:44px;align-items:center}
+.donut{width:600px;height:600px;flex:none;border-radius:50%;display:grid;place-items:center}
+.donut svg{position:absolute;inset:38px;width:calc(100% - 76px);height:calc(100% - 76px);rotate:-90deg;overflow:visible}
+.donut circle{fill:none;stroke-width:17;stroke-linecap:butt}
+.donut .mid{text-align:center}
+.donut .mid b{display:block;font-size:104px;line-height:1}
+.donut .mid small{font-size:26px;color:var(--dim);letter-spacing:.14em;text-transform:uppercase}
+.list{flex:1;display:flex;flex-direction:column;gap:13px}
+.li{display:flex;align-items:center;padding:0 32px;height:70px;border-radius:22px;font-size:27px}
+.li .dot{width:16px;height:16px;border-radius:50%;margin-right:22px;box-shadow:0 0 16px currentColor;background:currentColor;flex:none}
+.li .nm{width:400px;color:#eef3ff}
+.li .tr{flex:1;height:10px;border-radius:10px;background:rgba(255,255,255,.08);margin:0 28px}
+.li .tr i{display:block;height:100%;border-radius:10px;background:currentColor;box-shadow:0 0 14px currentColor}
+.li b{width:150px;text-align:right;font-size:32px;color:#fff}
+.li .pc{width:96px;text-align:right;color:var(--dim)}
+
+/* ---------- S5 Entsorger ---------- */
+#s5 .body{display:grid;grid-template-columns:520px 1fr;grid-template-rows:1fr auto;gap:24px}
+.heroc{grid-row:1;padding:40px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.ring{position:relative;width:300px;height:300px;display:grid;place-items:center}
+.ring svg{position:absolute;inset:0;width:100%;height:100%;rotate:-90deg;overflow:visible}
+.ring circle{fill:none;stroke-width:11;stroke-linecap:round}
+.ring b{font-size:84px}
+.heroc h3{font-size:44px;font-weight:700;margin-top:22px;font-family:'Inter Display'}
+.heroc p{font-size:60px;margin-top:2px}
+.g6{display:grid;grid-template-columns:repeat(6,1fr);gap:24px}
+.et{grid-column:span 2;padding:26px 30px;display:flex;flex-direction:column;justify-content:space-between;border-radius:30px}
+.et.w{grid-column:span 3}
+.et .top{display:flex;justify-content:space-between;font-size:27px;color:#eaf0ff}
+.et .top span{color:var(--dim)}
+.et b{font-size:66px;line-height:1.05}
+.et .tr{height:8px;border-radius:8px;background:rgba(255,255,255,.1)}
+.et .tr i{display:block;height:100%;border-radius:8px;background:linear-gradient(90deg,#2f6ee8,var(--blue2));box-shadow:0 0 14px rgba(79,157,255,.8)}
+.note{grid-column:1/-1;display:flex;align-items:center;gap:30px;padding:20px 40px;font-size:29px;color:#e6eeff;border-radius:30px}
+.note b{font-size:76px;line-height:1}
+
+/* ---------- S6 ohne Beleg ---------- */
+#s6 .body{flex-direction:column;gap:26px}
+.bars{flex:1;padding:22px 48px;display:flex;flex-direction:column;justify-content:space-around}
+.br{display:flex;align-items:center;font-size:28px}
+.br .nm{width:640px;color:#eef3ff}
+.br .tr{flex:1;height:38px;position:relative}
+.br .tr i{display:block;height:100%;border-radius:19px;background:linear-gradient(90deg,rgba(47,110,232,.5),#4f9dff 70%,#a8d0ff);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 26px rgba(79,157,255,.45)}
+.br:nth-child(2) .tr i{background:linear-gradient(90deg,rgba(245,165,42,.5),#ffc74a 70%,#fff0c4);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 0 26px rgba(255,199,74,.45)}
+.br b{width:170px;text-align:right;font-size:36px}
+.br .pc{width:110px;text-align:right;color:var(--dim)}
+.eq{display:flex;align-items:center;gap:26px;height:170px}
+.eq .gl{height:100%;display:flex;flex-direction:column;justify-content:center;padding:0 44px;border-radius:32px}
+.eq small{font-size:22px;color:var(--dim);letter-spacing:.14em;text-transform:uppercase}
+.eq b{font-size:64px;line-height:1.1}
+.eq .op{font-size:70px;font-weight:300;color:var(--dim)}
+.eq .sum{flex:1;align-items:center}
+.eq .sum b{font-size:112px}
+
+/* ---------- S7 Container ---------- */
+#s7 .body{flex-direction:column;gap:26px}
+.c74{display:flex;align-items:center;gap:60px;flex:1}
+.c74 .n{font-size:330px;line-height:.9;font-weight:800}
+.c74 h3{font-family:'Inter Display';font-size:74px;font-weight:700;letter-spacing:-.02em;line-height:1.05}
+.c74 .l{flex:none}
+.c74 .r{flex:1}
+.c74 .cap{font-size:26px;color:var(--dim);margin-bottom:16px;letter-spacing:.14em;text-transform:uppercase}
+.c74 .cap b{color:#fff}
+.c74 .row .gl{flex:1;padding:22px 30px;border-radius:28px}
+.c74 .row b{font-size:92px;line-height:1;display:block}
+.c74 .row .gl>span{font-size:26px;color:var(--dim)}
+.split{padding:28px 44px 30px}
+.split .cap{font-size:24px;color:var(--blue2);font-weight:600}
+.stripe{display:flex;gap:8px;height:74px;margin:16px 0 18px}
+.stripe div{overflow:hidden;border-radius:18px;display:flex}
+.stripe i{display:flex;align-items:center;flex:none;width:100%;border-radius:18px;font-style:normal;font-size:38px;font-weight:800;padding-left:26px;color:#071022;font-family:'Inter Display';box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.lg{display:flex;gap:54px;font-size:27px}
+.lg span{display:flex;align-items:center;gap:14px}
+.lg span::before{content:'';width:18px;height:18px;border-radius:6px;background:currentColor;box-shadow:0 0 12px currentColor}
+.lg em{font-style:normal;color:#eef3ff}
+.split p{font-size:21px;color:var(--dim2);margin-top:14px}
+
+/* ---------- S8 Liter ---------- */
+#s8 .body{gap:26px}
+.area{flex:1;position:relative;padding:0}
+.area svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.area text{font-family:'Inter';fill:rgba(214,226,255,.62);font-size:19px}
+.side{width:400px;display:flex;flex-direction:column;gap:20px}
+.tot{padding:28px 34px;flex:1.5;display:flex;flex-direction:column;justify-content:center}
+.tot small{font-size:22px;color:var(--dim);letter-spacing:.14em;text-transform:uppercase}
+.tot b{font-size:108px;line-height:1.05}
+.tot>span{font-size:44px;font-weight:700;font-family:'Inter Display';color:var(--yel)}
+.fu{flex:1;display:flex;align-items:center;justify-content:space-between;padding:0 34px;border-radius:28px;font-size:29px;color:var(--dim)}
+.fu b{font-size:50px;color:#fff}
+
+/* ---------- S9 Tankkarten ---------- */
+#s9 .body{display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:24px}
+.tk{padding:28px 30px;display:flex;flex-direction:column;justify-content:space-between;border-radius:32px}
+.tk .top{display:flex;justify-content:space-between;align-items:flex-start;font-size:25px;color:#eaf0ff;line-height:1.25}
+.tk .top span{color:var(--dim);flex:none;margin-left:10px;font-size:25px}
+.tk .rk{font-size:19px;color:var(--dim2);letter-spacing:.16em;margin-bottom:8px}
+.tk b{font-size:92px;line-height:1}
+.tk b small{font-size:44px;font-weight:600;color:var(--dim);margin-left:8px;letter-spacing:0;-webkit-text-fill-color:initial}
+.tk .tr{height:9px;border-radius:9px;background:rgba(255,255,255,.1)}
+.tk .tr i{display:block;height:100%;border-radius:9px;background:linear-gradient(90deg,#2f6ee8,var(--blue2));box-shadow:0 0 14px rgba(79,157,255,.8)}
+.tk.y .tr i{background:linear-gradient(90deg,#f5a52a,var(--yel2));box-shadow:0 0 14px rgba(255,199,74,.8)}
+
+/* ---------- S10 Tankstellen ---------- */
+#s10 .body{gap:30px}
+.tubes{flex:1.25;display:flex;justify-content:space-around;align-items:stretch;padding:34px 30px 30px}
+.tb{display:flex;flex-direction:column;align-items:center;width:250px}
+.tb b{font-size:60px;line-height:1}
+.tb .pc{font-size:24px;color:var(--dim);margin:4px 0 16px}
+.tb .glass{flex:1;width:150px;border-radius:75px;position:relative;overflow:hidden;background:linear-gradient(90deg,rgba(255,255,255,.14),rgba(255,255,255,.03) 40%,rgba(255,255,255,.1));border:1px solid rgba(255,255,255,.22);box-shadow:inset 0 0 30px rgba(0,0,10,.5)}
+.tb .glass i{position:absolute;left:0;right:0;bottom:0;border-radius:0 0 75px 75px;background:linear-gradient(180deg,#a8d0ff,#4f9dff 18%,#2456c8);box-shadow:0 0 40px rgba(79,157,255,.7)}
+.tb .glass i::before{content:'';position:absolute;left:0;right:0;top:0;height:10px;background:rgba(255,255,255,.75);border-radius:50%;translate:0 -4px;filter:blur(2px)}
+.tb .glass::after{content:'';position:absolute;left:16px;top:26px;bottom:26px;width:14px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.05))}
+.tb.y .glass i{background:linear-gradient(180deg,#fff0c4,#ffc74a 18%,#e08a14);box-shadow:0 0 40px rgba(255,199,74,.7)}
+.tb .nm{font-size:27px;margin-top:16px;text-align:center;color:#eef3ff}
+.chips{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.chp{padding:26px 32px;border-radius:32px;display:flex;flex-direction:column;justify-content:space-between}
+.chp .top{display:flex;justify-content:space-between;font-size:27px;color:#eaf0ff}
+.chp .top span{color:var(--dim)}
+.chp b{font-size:84px;line-height:1}
+.chp b small{font-size:40px;font-weight:600;color:var(--dim);margin-left:8px;-webkit-text-fill-color:initial}
+
+/* ---------- S11 Fuhrpark ---------- */
+#s11 .body{flex-direction:column;justify-content:center}
+.tl{position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:18px}
+.tl .line{position:absolute;left:0;right:0;top:66px;height:3px;border-radius:3px;background:linear-gradient(90deg,var(--blue),var(--yel));box-shadow:0 0 18px rgba(255,199,74,.6)}
+.ev{display:flex;flex-direction:column;align-items:center}
+.ev .dt{font-size:34px;font-weight:700;font-family:'Inter Display';height:44px}
+.ev .nd{width:26px;height:26px;border-radius:50%;margin:10px 0 28px;background:radial-gradient(circle at 35% 30%,#fff,#ffc74a 55%);box-shadow:0 0 0 7px rgba(255,199,74,.16),0 0 26px rgba(255,199,74,.9);position:relative;z-index:2}
+.ev .gl{width:100%;height:230px;border-radius:28px;padding:26px 16px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px}
+.plate{display:inline-flex;align-items:stretch;border-radius:9px;background:linear-gradient(180deg,#fff,#dfe5f2);color:#0a0f1c;font-weight:800;font-size:27px;letter-spacing:.01em;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.5),inset 0 0 0 2px #0a0f1c;font-family:'Inter Display'}
+.plate::before{content:'D';width:20px;background:#1d4fd0;color:#fff;font-size:11px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px}
+.plate span{padding:8px 12px 8px 10px;white-space:nowrap}
+.ev .vh{font-size:25px;line-height:1.25;color:#eef3ff}
+.fn{font-size:24px;color:var(--dim);margin-top:34px;text-align:center}
+
+/* ---------- S12 Finale ---------- */
+#s12{align-items:center;text-align:center;padding-top:70px;padding-bottom:60px;justify-content:center}
+#s12 .eb{font-size:24px;letter-spacing:.4em}
+#s12 .eb::before{display:none}
+#s12 .row{margin:34px 0 44px;gap:34px}
+.fin{padding:34px 60px 40px;min-width:640px}
+.fin small{font-size:24px;color:var(--dim);letter-spacing:.2em;text-transform:uppercase}
+.fin b{display:block;font-size:150px;line-height:1.05}
+.fin>span{font-size:50px;font-weight:700;font-family:'Inter Display'}
+#s12 h1{font-family:'Inter Display';font-size:150px;font-weight:800;letter-spacing:-.04em;line-height:1}
+#s12 p{font-size:23px;color:var(--dim);line-height:1.5;margin-top:34px}
+#s12 .logo{width:300px;margin-top:36px}
+
+/* ================= HOCHFORMAT ================= */
+.port .scene{padding:110px 60px 150px}
+.port #foot{left:60px;right:60px;bottom:50px;font-size:20px}
+.port .eb{font-size:24px}
+.port h2{font-size:78px}
+.port .body{margin-top:50px}
+.port #s1 .logo{width:520px;margin-bottom:90px}
+.port #s1 h1{font-size:164px;margin:50px 0 80px}
+.port #s1 .pill{font-size:30px;padding:26px 40px;line-height:1.4}
+.port #s1 .eb{font-size:28px}
+.port .hero{flex-direction:column;align-items:center;gap:0}
+.port .hero .big{font-size:340px}
+.port .hero .unit{font-size:110px}
+.port #s2 .row{flex-direction:column;margin-top:90px;width:100%}
+.port .kpi{padding:40px 50px 46px}
+.port .kpi small{font-size:30px}.port .kpi b{font-size:104px}
+.port .chart{padding:130px 30px 110px 84px;flex:none;width:100%;height:1150px;margin-top:80px}
+.port .plot{gap:8px}
+.port .col i{border-radius:8px 8px 3px 3px}
+.port .col span{font-size:17px;rotate:-60deg;translate:-70% 6px;transform-origin:100% 0}
+.port .col em{top:calc(100% + 62px);translate:-20% 0}
+.port #s4 .body{flex-direction:column;gap:50px}
+.port .donut{width:640px;height:640px}
+.port .list{width:100%;flex:none;gap:14px}
+.port .li{height:92px;font-size:30px;padding:0 30px}
+.port .li .nm{width:auto;flex:1}.port .li .tr{display:none}
+.port .li b{font-size:38px;width:170px}.port .li .pc{width:104px}
+.port #s5 .body{grid-template-columns:1fr;grid-template-rows:auto 1fr auto}
+.port .heroc{flex-direction:row;gap:50px;text-align:left;padding:44px}
+.port .heroc h3{margin-top:0;font-size:56px}.port .heroc p{font-size:84px}
+.port .g6{grid-template-columns:repeat(2,1fr)}
+.port .et,.port .et.w{grid-column:span 1}
+.port .et:last-child{grid-column:span 2}
+.port .et b{font-size:84px}.port .et .top{font-size:30px}
+.port .note{flex-direction:column;align-items:flex-start;gap:8px;padding:34px 40px;font-size:30px;line-height:1.4}
+.port .note b{font-size:110px}
+.port .bars{padding:30px 40px;flex:none;height:980px;width:100%}
+.port .br{display:grid;grid-template-columns:1fr 160px 100px;align-items:center}
+.port .br .nm{grid-column:1/-1;width:auto;font-size:29px;margin-bottom:12px}
+.port .br b{width:160px;font-size:40px}.port .br .pc{width:100px}
+.port .eq{flex-wrap:wrap;height:auto;gap:22px;margin-top:20px}
+.port .eq .gl{height:170px;flex:1;padding:0 34px}
+.port .eq .op{display:none}
+.port .eq .sum{flex:none;width:100%;height:250px}
+.port .eq .sum b{font-size:150px}
+.port .c74{flex-direction:column;align-items:stretch;gap:60px;justify-content:space-evenly}
+.port .c74 .l{text-align:center}
+.port .c74 .n{font-size:420px}
+.port .c74 h3{font-size:86px}
+.port .c74 .row .gl{padding:26px 24px}
+.port .c74 .row b{font-size:96px}
+.port .c74 .cap{text-align:center}
+.port .split{padding:34px 36px}
+.port .stripe{height:96px}
+.port .lg{flex-direction:column;gap:14px;font-size:30px}
+.port .split p{font-size:24px;line-height:1.4}
+.port #s8 .body{flex-direction:column}
+.port .side{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}
+.port .tot{grid-column:1/-1;flex-direction:row;align-items:baseline;justify-content:center;gap:24px;padding:34px;flex-wrap:wrap}
+.port .tot small{width:100%;text-align:center}
+.port .tot b{font-size:150px}.port .tot>span{font-size:64px}
+.port .fu{flex-direction:column;justify-content:center;gap:4px;padding:30px 10px;font-size:28px}
+.port .area{min-height:780px}
+.port #s9 .body{grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr)}
+.port .tk b{font-size:104px}.port .tk .top{font-size:28px}
+.port #s10 .body{flex-direction:column}
+.port .tubes{flex:1.5;padding:40px 10px}
+.port .chips{flex:1}
+.port .chp b{font-size:92px}.port .chp .top{font-size:28px}
+.port .tl{grid-template-columns:1fr;gap:16px}
+.port .tl .line{left:35px;right:auto;top:20px;bottom:20px;width:3px;height:auto;background:linear-gradient(180deg,var(--blue),var(--yel))}
+.port .ev{flex-direction:row;align-items:center;gap:0}
+.port .ev .nd{margin:0 30px 0 24px;flex:none;order:-1}
+.port .ev .dt{width:190px;font-size:40px;height:auto;flex:none}
+.port .ev .gl{height:150px;flex:1;flex-direction:row;align-items:center;text-align:left;padding:0 26px;gap:24px}
+.port .ev .vh{font-size:28px}
+.port .plate{font-size:28px;flex:none}
+.port .fn{font-size:26px;line-height:1.4;margin-top:44px}
+.port #s12 .row{flex-direction:column;margin:60px 0 80px;width:100%}
+.port .fin{min-width:0;padding:50px}
+.port .fin b{font-size:210px}.port .fin>span{font-size:64px}
+.port #s12 h1{font-size:170px}
+.port #s12 p{font-size:27px;margin-top:60px}
+.port #s12 .logo{width:380px;margin-top:70px}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="orb" id="o1"></div><div class="orb" id="o2"></div><div class="orb" id="o3"></div>
+  <div class="orb" id="ring1"></div><div class="orb" id="ring2"></div>
+  <div class="orb" id="o4"></div><div class="orb" id="o5"></div><div class="orb" id="o6"></div>
+  <div id="vig"></div>
+  <div id="scenes"></div>
+  <div id="foot"><span>Platzwerk Allgäu · Statistik · Stand 14.11.2026</span><img src="logo.png" alt=""></div>
+  <div id="prog"></div>
+  <div id="fade"></div>
+</div>
+<script>
+const Q=new URLSearchParams(location.search);
+const PORT=Q.get('fmt')==='port';
+if(PORT)document.body.classList.add('port');
+const W=PORT?1080:1920,H=PORT?1920:1080;
+const BAR=2.4, LEN=[4,5,5,6,5,6,6,5,5,5,6,6];
+const ST=[];let acc=0;for(const l of LEN){ST.push(acc*BAR);acc+=l}
+const TOTAL=acc*BAR; // 153.6 s
+const de=(v,d=0)=>v.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
+const cnt=(to,dec,at,dur=2.2)=>`<span class="cnt" data-to="${to}" data-dec="${dec}" data-at="${at}" data-dur="${dur}">${de(to,dec)}</span>`;
+const hd=(eb,h)=>`<header><div class="eb a" style="--d:.15">${eb}</div><h2 class="a" style="--d:.3">${h}</h2></header>`;
+const MON=['Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt'];
+const PAL=['#4f9dff','#ffc74a','#8fc4ff','#2f6ee8','#ffe29a','#c9d6f2','#7786a8'];
+
+/* ---------- Daten (unverändert aus dem Original) ---------- */
+const TONS=[4.2,12.9,29.2,14.3,0,2.5,11.2,30.9,18.0,20.2,60.1,55.6,40.7,106.7,28.4,36.5,29.2,39.9,25.3,40.2,12.9]; // Balkenhöhen
+const LITER=[66.7,380.7,588.7,294.4,0,106,0,157,333.6,78.5,349.3,404.2,624,694.7,608.3,961.6,898.8,1095,639.7,596.6,372.8];
+const FRAK=[['Baumischabfall',257.5,41],['Altholz A I–III',148.4,24],['Metall / Schrott',70.1,11],['Bauschutt / mineralisch',56.4,9],['Sperrmüll / Siedlungsabfall',45.2,7],['Asbest / Dämmstoffe',12.5,2],['Übrige Fraktionen',30.5,5]];
+const ENTS=[['Höbel',321.0,52],['Settele',109.2,18],['Knettenbrech',89.8,14],['Schießler',72.1,12],['Geiger',17.3,3],['Weitere',11.2,2]];
+const OHNE=[['Krankenhaus (für Hubert Schmid)',40.0,30],['ZAK Kempten: 33 Fahrten × 1,2 t',39.6,29],['Schongau, Bauschutt (für Hubert Schmid)',25.0,19],['Oberbeuren, Baumischabfall (für Hubert Schmid)',20.0,15],['Baumischabfall ohne Beleg',10.0,7]];
+const KART=[['EDC-Karte 1',2471,27],['EDC-Karte 2',1760,19],['Einzelbelege ohne Karte',1576,17],['KF-DE 200',914,10],['Karte „Thomas Neidhardt“',777,8],['KF-DE 100',736,8],['Karte „Chef“',548,6],['Karte „Ersatz“',490,5]];
+const TANK=[['HEM Kaufbeuren',3631,39],['Aral Kaufbeuren',3024,32],['Tankpool Kaufbeuren',1300,14],['Aral Memmingen',218,2],['JET Pforzen',124,1],['Shell Jengen',104,1],['Alle anderen',910,10]];
+const FUHR=[['04.2025','KF-DE 200','VW Crafter'],['09.2025','KF-DE 250','Mercedes Sprinter'],['02.2026','KF-DE 175','Ford Transit'],['02.2026','KF-DE 12','Audi SQ8'],['04.2026','KF-DE 225','Humbaur 3,5-t-Kipper (Anhänger)'],['05.2026','KF-DE 125','Böcker Möbelaufzug'],['07.2026','KF-DE 75','Ford Transit Connect']];
+
+/* ---------- Bausteine ---------- */
+function columns(data,max,pk,call,ticks){
+  let h=ticks.map(([v,l])=>`<div class="gridl fi" style="--d:.6;bottom:${v/max*100}%"><span>${l}</span></div>`).join('')+'<div class="gridl base" style="bottom:0"></div>';
+  h+=data.map((v,i)=>`<div class="col${i===pk?' pk':''}"><i class="gh" style="height:${v/max*100}%;--d:${(.9+i*.085).toFixed(2)}"></i><span>${MON[i]}</span>${i===0?'<em>2025</em>':i===11?'<em>2026</em>':''}${i===pk?`<div class="call pop" style="--d:${(2.2+i*.085).toFixed(2)};bottom:calc(${v/max*100}% + 16px)">${call}</div>`:''}</div>`).join('');
+  return `<div class="plot">${h}</div>`;
+}
+function donut(){
+  let off=0,s='';
+  FRAK.forEach(([n,v],i)=>{const l=v/620.6*1000;s+=`<circle class="seg" cx="50%" cy="50%" r="47%" pathLength="1000" stroke="${PAL[i]}" style="--d:${(.7+i*.22).toFixed(2)};stroke-dasharray:${Math.max(l-5,2).toFixed(1)} 1000;stroke-dashoffset:${(-off).toFixed(1)};filter:drop-shadow(0 0 10px ${PAL[i]})"/>`;off+=l});
+  return `<svg><circle cx="50%" cy="50%" r="47%" stroke="rgba(255,255,255,.07)"/>${s}</svg>`;
+}
+function areaChart(){
+  // Maße je Format
+  const w=PORT?960:1154,h=PORT?780:738,pl=92,pr=40,pt=PORT?130:120,pb=92,max=1095;
+  const X=i=>pl+(w-pl-pr)*i/20,Y=v=>pt+(h-pt-pb)*(1-v/max);
+  const pts=LITER.map((v,i)=>[X(i),Y(v)]);
+  // monotone kubische Interpolation
+  const n=pts.length,dx=[],m=[],t=[];
+  for(let i=0;i<n-1;i++){dx.push(pts[i+1][0]-pts[i][0]);m.push((pts[i+1][1]-pts[i][1])/dx[i])}
+  t[0]=m[0];t[n-1]=m[n-2];
+  for(let i=1;i<n-1;i++){t[i]=m[i-1]*m[i]<=0?0:(m[i-1]+m[i])/2}
+  for(let i=0;i<n-1;i++){if(m[i]===0){t[i]=t[i+1]=0}else{const a=t[i]/m[i],b=t[i+1]/m[i],s=a*a+b*b;if(s>9){const k=3/Math.sqrt(s);t[i]=k*a*m[i];t[i+1]=k*b*m[i]}}}
+  let d=`M${pts[0][0]},${pts[0][1]}`;
+  for(let i=0;i<n-1;i++){const x1=pts[i][0]+dx[i]/3,y1=pts[i][1]+t[i]*dx[i]/3,x2=pts[i+1][0]-dx[i]/3,y2=pts[i+1][1]-t[i+1]*dx[i]/3;d+=`C${x1.toFixed(1)},${y1.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)} ${pts[i+1][0].toFixed(1)},${pts[i+1][1].toFixed(1)}`}
+  const base=Y(0),ar=d+`L${X(20)},${base}L${X(0)},${base}Z`;
+  let g='';
+  [[274,'274'],[547,'547'],[821,'821'],[1095,'1.095']].forEach(([v,l])=>{g+=`<line x1="${pl-10}" x2="${w-pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(255,255,255,.09)"/><text x="${pl-22}" y="${Y(v)+7}" text-anchor="end">${l}</text>`});
+  g+=`<line x1="${pl-10}" x2="${w-pr}" y1="${base}" y2="${base}" stroke="rgba(255,255,255,.3)"/>`;
+  let lab='';MON.forEach((mn,i)=>{if(PORT&&i%2)return;lab+=`<text x="${X(i)}" y="${base+34}" text-anchor="middle">${mn}</text>`});
+  lab+=`<text x="${X(0)}" y="${base+64}" text-anchor="middle" style="fill:#fff;font-weight:700">2025</text><text x="${X(11)}" y="${base+64}" text-anchor="middle" style="fill:#fff;font-weight:700">2026</text>`;
+  const dots=pts.map((p,i)=>`<circle class="pop" style="--d:${(1.1+i*.11).toFixed(2)};transform-box:fill-box;transform-origin:center" cx="${p[0]}" cy="${p[1]}" r="${i===17?11:6}" fill="${i===17?'#ffc74a':'#dff0ff'}" ${i===17?'filter="url(#gy)"':''}/>`).join('');
+  const px=pts[17][0],py=pts[17][1];
+  return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+  <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f9dff" stop-opacity=".55"/><stop offset="1" stop-color="#4f9dff" stop-opacity="0"/></linearGradient>
+  <linearGradient id="lg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4f9dff"/><stop offset=".7" stop-color="#bfe0ff"/><stop offset=".85" stop-color="#ffc74a"/><stop offset="1" stop-color="#8fc4ff"/></linearGradient>
+  <filter id="gl" x="-10%" y="-40%" width="120%" height="180%"><feGaussianBlur stdDeviation="9"/></filter>
+  <filter id="gy" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+  <g class="fi" style="--d:.5">${g}${lab}</g>
+  <path class="fi" style="--d:2.2" d="${ar}" fill="url(#ag)"/>
+  <path class="draw" style="--d:.9" pathLength="1" d="${d}" fill="none" stroke="url(#lg)" stroke-width="12" filter="url(#gl)" opacity=".8"/>
+  <path class="draw" style="--d:.9" pathLength="1" d="${d}" fill="none" stroke="url(#lg)" stroke-width="5" stroke-linecap="round"/>
+  ${dots}
+  <g class="pop" style="--d:3.2;transform-box:fill-box;transform-origin:center bottom"><rect x="${px-128}" y="${py-76}" width="256" height="50" rx="25" fill="#ffc74a"/><text x="${px}" y="${py-42}" text-anchor="middle" style="fill:#1a1204;font-weight:700;font-size:25px">Jul 2026: 1.095 l</text></g>
+  </svg>`;
+}
+
+/* ---------- Szenen ---------- */
+const S=[];
+S[0]=`<img class="logo a z" style="--d:.5" src="logo.png">
+<div class="eb a" style="--d:1.3">Statistik</div>
+<h1><span class="a" style="--d:1.7">Das</span> <span class="a" style="--d:1.85">haben</span> <span class="a" style="--d:2">wir</span><br><span class="a yt" style="--d:2.5">geschafft.</span></h1>
+<div class="gl t a pill" style="--d:3.3;--k:2">Unsere Zahlen von <b>Februar 2025</b> bis <b>Oktober 2026</b></div>`;
+
+S[1]=hd('Entsorgt seit Februar 2025','Das haben wir gemeinsam bewegt')+`<div class="body">
+<div class="hero a z" style="--d:.7"><span class="num big wt">${cnt(620.6,1,.8,3.2)}</span><span class="unit bt">Tonnen</span></div>
+<div class="row" style="margin-top:44px">
+<div class="gl t a kpi" style="--d:2.6;--k:1.6;--x:.06"><small>2025 (ab Februar)</small><b class="num wt">${cnt(204.7,1,2.8,2)} t</b><div class="tr"><i class="gw" style="--d:3;width:${204.7/415.9*100}%"></i></div></div>
+<div class="gl y t a kpi" style="--d:2.9;--k:-1.6;--x:.12"><small>2026 (bis Oktober)</small><b class="num yt">${cnt(415.9,1,3.1,2)} t</b><div class="tr"><i class="gw" style="--d:3.3;width:100%"></i></div></div>
+</div></div>`;
+
+S[2]=hd('Tonnen pro Monat','Monat für Monat angepackt')+`<div class="body"><div class="gl t a chart" style="--d:.5;--k:.8">${columns(TONS,106.7,13,'Mär 2026: 106,7 t',[[27,'27'],[53,'53'],[80,'80'],[106.7,'107']])}</div></div>`;
+
+S[3]=hd('Was wir entsorgen','Die größten Fraktionen')+`<div class="body">
+<div class="gl t a donut" style="--d:.5;--k:1.5">${donut()}<div class="mid"><b class="num wt">${cnt(620.6,1,.8,2.6)} t</b><small>belegt</small></div></div>
+<div class="list">${FRAK.map(([n,v,p],i)=>`<div class="gl a l li" style="--d:${(.9+i*.2).toFixed(2)};--x:${(i*.03).toFixed(2)};color:${PAL[i]}"><span class="dot"></span><span class="nm">${n}</span><span class="tr"><i class="gw" style="--d:${(1.2+i*.2).toFixed(2)};width:${v/257.5*100}%"></i></span><b class="num">${cnt(v,1,1+i*.2,1.6)} t</b><span class="pc">${p} %</span></div>`).join('')}</div></div>`;
+
+S[4]=hd('Wo wir entsorgen','Unsere Entsorger')+`<div class="body">
+<div class="gl y t a heroc" style="--d:.5;--k:1.4"><div class="ring"><svg><circle cx="50%" cy="50%" r="46%" stroke="rgba(255,255,255,.08)"/><circle class="seg" cx="50%" cy="50%" r="46%" pathLength="1000" stroke="#ffc74a" style="--d:1;stroke-dasharray:520 1000;filter:drop-shadow(0 0 12px #ffc74a)"/></svg><b class="num yt">52 %</b></div><div><h3>Höbel</h3><p class="num wt">${cnt(321.0,1,.9,2.4)} t</p></div></div>
+<div class="g6">${ENTS.slice(1).map(([n,v,p],i)=>`<div class="gl a et${i>2?' w':''}" style="--d:${(1+i*.22).toFixed(2)};--x:${(i*.04).toFixed(2)}"><div class="top">${n}<span>${p} %</span></div><b class="num wt">${cnt(v,1,1.1+i*.22,1.8)} t</b><div class="tr"><i class="gw" style="--d:${(1.4+i*.22).toFixed(2)};width:${v/321*100}%"></i></div></div>`).join('')}</div>
+<div class="gl a note" style="--d:2.6;--x:.2"><b class="num yt">${cnt(33,0,2.8,1.6)}</b><span>belegte Fahrten zu ZAK Kempten · je Fahrt rund 1,2 t, also etwa 40 t (geschätzt)</span></div></div>`;
+
+S[5]=hd('Dazu geschätzt · Mengen ohne Beleg','Und es war sogar noch mehr')+`<div class="body">
+<div class="gl t a bars" style="--d:.5;--k:.8">${OHNE.map(([n,v,p],i)=>`<div class="br"><span class="nm fi" style="--d:${(.9+i*.2).toFixed(2)}">${n}</span><span class="tr"><i class="gw" style="--d:${(1+i*.2).toFixed(2)};width:${v/40*100}%"></i></span><b class="num fi" style="--d:${(1.2+i*.2).toFixed(2)}">${cnt(v,1,1+i*.2,1.6)} t</b><span class="pc fi" style="--d:${(1.4+i*.2).toFixed(2)}">${p} %</span></div>`).join('')}</div>
+<div class="eq"><div class="gl a" style="--d:3.6"><small>belegt</small><b class="num wt">620,6 t</b></div><span class="op a" style="--d:4">+</span><div class="gl a" style="--d:4.2;--x:.05"><small>geschätzt</small><b class="num wt">${cnt(134.6,1,4.3,1.8)} t</b></div><span class="op a" style="--d:5.4">=</span><div class="gl y t a z sum" style="--d:5.8;--k:1.6;--x:.1"><b class="num yt">rund ${cnt(755,0,6,2.6)} t</b></div></div></div>`;
+
+S[6]=hd('Container und Trennquote','Organisiert und getrennt')+`<div class="body">
+<div class="c74"><div class="l a z" style="--d:.6"><span class="num n yt">${cnt(74,0,.7,2.6)}</span></div>
+<div class="r"><h3 class="a" style="--d:1.2">Container gefüllt</h3><div class="cap a" style="--d:1.9;margin-top:26px"><b>${cnt(125,0,2,1.8)}</b> Einsätze</div>
+<div class="row"><div class="gl a" style="--d:2.2"><b class="num wt">${cnt(46,0,2.3,1.6)}</b><span>gestellt</span></div><div class="gl a" style="--d:2.45;--x:.05"><b class="num wt">${cnt(28,0,2.55,1.6)}</b><span>getauscht</span></div><div class="gl a" style="--d:2.7;--x:.1"><b class="num wt">${cnt(51,0,2.8,1.6)}</b><span>abgeholt</span></div></div></div></div>
+<div class="gl t a split" style="--d:4.4;--k:.8;--x:.15"><div class="cap">So liefern wir an (belegte Tonnen)</div>
+<div class="stripe"><div style="flex:294.8"><i class="gw" style="--d:5;background:linear-gradient(90deg,#4f9dff,#a8d0ff)">48 %</i></div><div style="flex:302.9"><i class="gw" style="--d:5.5;background:linear-gradient(90deg,#aab8d6,#dbe4f6)">49 %</i></div><div style="flex:22.9"><i class="gw" style="--d:6;background:linear-gradient(90deg,#ff8a4a,#ffb27a);padding:0"></i></div></div>
+<div class="lg"><span class="fi" style="--d:5.2;color:#4f9dff"><em>sortenrein getrennt: 294,8 t</em></span><span class="fi" style="--d:5.7;color:#c3cfe8"><em>gemischt: 302,9 t</em></span><span class="fi" style="--d:6.2;color:#ff9a5c"><em>gefährlich: 22,9 t</em></span></div>
+<p class="fi" style="--d:6.8">Sortenrein: Altholz A I–III, Metall, Bauschutt, Elektro, Papier, Glas, Gips, Reifen</p></div></div>`;
+
+S[7]=hd('Getankt seit Februar 2025 · Liter pro Monat','Immer in Bewegung')+`<div class="body">
+<div class="gl t a area" style="--d:.5;--k:.8">${areaChart()}</div>
+<div class="side"><div class="gl y t a tot" style="--d:.9;--k:-1.5"><small>Gesamt</small><b class="num yt">${cnt(9311,0,1,3)}</b><span>Liter</span></div>
+<div class="gl a fu" style="--d:3.6;--x:.05">Diesel<b class="num">${cnt(8351,0,3.7,1.8)} l</b></div><div class="gl a fu" style="--d:3.85;--x:.1">Benzin<b class="num">${cnt(923,0,3.95,1.8)} l</b></div><div class="gl a fu" style="--d:4.1;--x:.15">AdBlue<b class="num">${cnt(38,0,4.2,1.8)} l</b></div></div></div>`;
+
+S[8]=hd('Wer tankt wie viel','Liter je Tankkarte')+`<div class="body">${KART.map(([n,v,p],i)=>`<div class="gl${i===0?' y':''} a tk${i===0?' y':''}" style="--d:${(.6+i*.2).toFixed(2)};--x:${(i*.03).toFixed(2)}"><div><div class="rk">NR. ${i+1}</div><div class="top">${n}<span>${p} %</span></div></div><b class="num ${i===0?'yt':'wt'}">${cnt(v,0,.7+i*.2,1.8)}<small>l</small></b><div class="tr"><i class="gw" style="--d:${(1+i*.2).toFixed(2)};width:${v/2471*100}%"></i></div></div>`).join('')}</div>`;
+
+S[9]=hd('Wo wir tanken','Unsere Tankstellen')+`<div class="body">
+<div class="gl t a tubes" style="--d:.5;--k:1.1">${TANK.slice(0,3).map(([n,v,p],i)=>`<div class="tb${i===1?' y':''}"><b class="num ${i===1?'yt':'wt'}">${cnt(v,0,.9+i*.3,2.4)} l</b><span class="pc">${p} %</span><div class="glass"><i class="gh" style="--d:${(.9+i*.3).toFixed(2)};height:${v/3631*94}%;animation-duration:2.4s"></i></div><span class="nm">${n}</span></div>`).join('')}</div>
+<div class="chips">${TANK.slice(3).map(([n,v,p],i)=>`<div class="gl a chp" style="--d:${(2.4+i*.22).toFixed(2)};--x:${(i*.04).toFixed(2)}"><div class="top">${n}<span>${p} %</span></div><b class="num wt">${cnt(v,0,2.5+i*.22,1.6)}<small>l</small></b></div>`).join('')}</div></div>`;
+
+S[10]=hd('Wann kam was dazu?','Unser Fuhrpark ist gewachsen')+`<div class="body"><div class="tl"><div class="line ${PORT?'gh':'gw'}" style="--d:.7;animation-duration:4.6s;animation-timing-function:linear"></div>
+${FUHR.map(([d,k,v],i)=>`<div class="ev"><div class="dt yt a" style="--d:${(.9+i*.6).toFixed(2)}">${d}</div><div class="nd pop" style="--d:${(.9+i*.6).toFixed(2)}"></div><div class="gl a" style="--d:${(1.1+i*.6).toFixed(2)};--x:${(i*.03).toFixed(2)}"><div class="plate"><span>${k}</span></div><div class="vh">${v}</div></div></div>`).join('')}</div>
+<div class="fn a" style="--d:6.2">Dazu zwei VW Caddy (KF-DE 100 und KF-DE 150), Datum nicht in den Unterlagen</div></div>`;
+
+S[11]=`<div class="eb a" style="--d:.4">Das haben wir geschafft</div>
+<div class="row"><div class="gl t a fin" style="--d:.9;--k:1.5"><small>Rund</small><b class="num wt">${cnt(755,0,1.1,3)}</b><span class="bt">Tonnen.</span></div>
+<div class="gl y t a fin" style="--d:1.4;--k:-1.5"><small>Getankt</small><b class="num yt">${cnt(9311,0,1.6,3)}</b><span class="yt">Liter.</span></div></div>
+<h1 class="a z" style="--d:4.6">Danke ans <span class="yt">Team.</span></h1>
+<p class="a" style="--d:6.2">620,6 Tonnen sind mit Rechnungen und Wiegescheinen belegt, der Rest ist geschätzt.<br>Einige Belege fehlen noch. Stand 14.11.2026.</p>
+<img class="logo a" style="--d:7" src="logo.png">`;
+
+const root=document.getElementById('scenes');
+const scenes=S.map((html,i)=>{const s=document.createElement('section');s.className='scene';s.id='s'+(i+1);
+  s.style.setProperty('--s',ST[i]);s.style.setProperty('--e',i===S.length-1?9999:ST[i]+LEN[i]*BAR);s.innerHTML=html;root.appendChild(s);return s});
+const counters=[...document.querySelectorAll('.cnt')].map(el=>({el,to:+el.dataset.to,dec:+el.dataset.dec,at:+el.dataset.at,dur:+el.dataset.dur,s:ST[+el.closest('.scene').id.slice(1)-1],last:''}));
+const $=id=>document.getElementById(id);
+const stage=$('stage'),orbs=['o1','o2','o3','o4','o5','o6','ring1','ring2'].map($);
+const sin=Math.sin,cos=Math.cos,clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const eo=x=>1-Math.pow(1-x,4);
+
+function seek(T){
+  T=clamp(T,0,TOTAL);
+  scenes.forEach((s,i)=>s.classList.toggle('on',T>=ST[i]-.02&&T<ST[i]+LEN[i]*BAR+.02));
+  for(const c of counters){const p=clamp((T-c.s-c.at)/c.dur,0,1),v=de(c.to*eo(p),c.dec);if(v!==c.last){c.el.textContent=v;c.last=v}}
+  // Kamera: sanftes Kippen und Schweben
+  stage.style.setProperty('--rx',(sin(T*.31)*2.1).toFixed(3)+'deg');
+  stage.style.setProperty('--ry',(sin(T*.23+1.1)*3.6).toFixed(3)+'deg');
+  stage.style.setProperty('--fy',(sin(T*.52)*7).toFixed(2)+'px');
+  stage.style.setProperty('--shx',(50+sin(T*.23+1.1)*45).toFixed(1)+'%');
+  // Lichter im Hintergrund
+  const P=[[.78+.10*sin(T*.07),.12+.12*cos(T*.09)],[.12+.12*cos(T*.06+2),.9+.1*sin(T*.08)],[.30+.18*sin(T*.05+4),.2+.14*cos(T*.07+1)],
+    [.74+.14*sin(T*.11+1),.56+.2*cos(T*.13)],[.22+.14*cos(T*.12+3),.42+.22*sin(T*.1+2)],[.5+.3*sin(T*.09+5),.82+.1*cos(T*.14)],
+    [.68+.1*cos(T*.08),.44+.14*sin(T*.06+2)],[.2+.1*sin(T*.1),.7+.12*cos(T*.09+4)]];
+  orbs.forEach((o,i)=>{const w=o.offsetWidth;o.style.transform=`translate(${(P[i][0]*W-w/2).toFixed(1)}px,${(P[i][1]*H-w/2).toFixed(1)}px)`});
+  $('prog').style.width=(T/TOTAL*100).toFixed(3)+'%';
+  $('foot').style.opacity=clamp((T-ST[1]-.4)/1.2,0,1)*clamp((ST[11]-.2-T)/.6,0,1);
+  $('fade').style.opacity=Math.max(clamp(1-T/1.1,0,1),clamp((T-(TOTAL-2.4))/2.2,0,1));
+  for(const a of document.getAnimations())a.currentTime=T*1000;
+}
+window.seek=seek;window.TOTAL=TOTAL;
+document.fonts.ready.then(()=>{seek(+Q.get('t')||0);window.READY=true;
+  if(!Q.has('render')&&!Q.has('t')){ // Vorschau im Browser
+    const fit=()=>{const k=Math.min(innerWidth/W,innerHeight/H);stage.style.transform=`scale(${k})`};fit();addEventListener('resize',fit);
+    const t0=performance.now();(function loop(){seek(((performance.now()-t0)/1000)%TOTAL);requestAnimationFrame(loop)})();
+  }});
+</script>
+</body>
+</html>

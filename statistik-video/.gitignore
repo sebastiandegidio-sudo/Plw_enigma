@@ -1,0 +1,4 @@
+.seg_*
+.video_*
+.music.wav
+node_modules
