@@ -1,4 +1,5 @@
 .seg_*
 .video_*
 .music.wav
+.pass*
 node_modules

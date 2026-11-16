@@ -349,6 +349,47 @@ h2{font-family:'Inter Display','Inter',sans-serif;font-size:70px;font-weight:700
 .port #s12 h1{font-size:170px}
 .port #s12 p{font-size:27px;margin-top:60px}
 .port #s12 .logo{width:380px;margin-top:70px}
+
+.kpi.sm{min-width:0}.kpi.sm b{font-size:60px;margin-top:14px}
+#s5 .body{grid-template-rows:1fr}
+.et .top span{font-size:19px;white-space:nowrap;padding-top:6px}
+body:not(.port) #s6 .body{flex-direction:row;gap:30px}
+.schr .bars{flex:1}
+.schh{width:520px;flex:none;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:30px}
+.schh small{font-size:24px;color:var(--dim);letter-spacing:.2em;text-transform:uppercase}
+.schh b{font-size:150px;line-height:1.1}
+.schh>span{font-size:30px;color:#eaf0ff}
+.schr{flex:1;display:flex;flex-direction:column;gap:24px;min-width:0}
+.schr .row{gap:24px}
+.schr .row .gl{flex:1;padding:24px 30px;border-radius:30px}
+.schr .row small{display:block;font-size:25px;color:var(--dim)}
+.schr .row b{display:block;font-size:76px;line-height:1.1}
+.schr .row em{display:block;font-style:normal;font-size:21px;color:var(--yel);min-height:26px}
+.schr .bars .cap{font-size:22px;color:var(--blue2);font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.schr .br .nm{width:430px;font-size:26px}
+.schr .br .tr{height:26px}.schr .br .tr i{border-radius:13px}
+.schr .br:nth-child(2) .tr i{background:linear-gradient(90deg,rgba(245,165,42,.5),#ffc74a 70%,#fff0c4)}
+.schr .br:nth-child(3) .tr i{background:linear-gradient(90deg,rgba(47,110,232,.5),#4f9dff 70%,#a8d0ff);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 0 26px rgba(79,157,255,.45)}
+.tl{grid-template-columns:repeat(var(--n),1fr)!important;gap:14px}
+.ev .dt{font-size:30px}.ev .gl{height:240px;padding:24px 10px}
+.plate{font-size:22px}.plate span{padding:7px 8px 7px 7px}.ev .vh{font-size:22px}
+.fn{font-size:30px;color:#eaf0ff}
+.port .kpi.sm b{font-size:70px}
+.port .et:last-child{grid-column:span 1}
+.port .sch{flex-direction:column}
+.port .schh{width:100%;padding:50px}
+.port .schh b{font-size:220px}.port .schh>span{font-size:36px}
+.port .schr .row{flex-direction:column}
+.port .schr .row .gl{display:grid;grid-template-columns:1fr auto;align-items:center;padding:26px 34px}
+.port .schr .row small{font-size:30px}.port .schr .row em{grid-column:1/-1;font-size:24px;min-height:0}
+.port .schr .bars{height:auto;flex:1;padding:30px 36px}
+.port .schr .br{grid-template-columns:1fr 150px}
+.port .schr .br .nm{width:auto}
+.port .tl{grid-template-columns:1fr!important;gap:12px}
+.port .ev .gl{height:122px;padding:0 22px}
+.port .ev .dt{font-size:36px;width:170px}
+.port .plate{font-size:26px}.port .ev .vh{font-size:26px}
+.port .fn{font-size:32px}
 </style>
 </head>
 <body>
@@ -358,10 +399,11 @@ h2{font-family:'Inter Display','Inter',sans-serif;font-size:70px;font-weight:700
   <div class="orb" id="o4"></div><div class="orb" id="o5"></div><div class="orb" id="o6"></div>
   <div id="vig"></div>
   <div id="scenes"></div>
-  <div id="foot"><span>Platzwerk Allgäu · Statistik · Stand 14.11.2026</span><img src="logo.png" alt=""></div>
+  <div id="foot"><span id="ft"></span><img src="logo.png" alt=""></div>
   <div id="prog"></div>
   <div id="fade"></div>
 </div>
+<script src="data.js"></script>
 <script>
 const Q=new URLSearchParams(location.search);
 const PORT=Q.get('fmt')==='port';
@@ -373,36 +415,28 @@ const TOTAL=acc*BAR; // 153.6 s
 const de=(v,d=0)=>v.toLocaleString('de-DE',{minimumFractionDigits:d,maximumFractionDigits:d});
 const cnt=(to,dec,at,dur=2.2)=>`<span class="cnt" data-to="${to}" data-dec="${dec}" data-at="${at}" data-dur="${dur}">${de(to,dec)}</span>`;
 const hd=(eb,h)=>`<header><div class="eb a" style="--d:.15">${eb}</div><h2 class="a" style="--d:.3">${h}</h2></header>`;
-const MON=['Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt'];
 const PAL=['#4f9dff','#ffc74a','#8fc4ff','#2f6ee8','#ffe29a','#c9d6f2','#7786a8'];
+const MON=D.mon;
 
-/* ---------- Daten (unverändert aus dem Original) ---------- */
-const TONS=[4.2,12.9,29.2,14.3,0,2.5,11.2,30.9,18.0,20.2,60.1,55.6,40.7,106.7,28.4,36.5,29.2,39.9,25.3,40.2,12.9]; // Balkenhöhen
-const LITER=[66.7,380.7,588.7,294.4,0,106,0,157,333.6,78.5,349.3,404.2,624,694.7,608.3,961.6,898.8,1095,639.7,596.6,372.8];
-const FRAK=[['Baumischabfall',257.5,41],['Altholz A I–III',148.4,24],['Metall / Schrott',70.1,11],['Bauschutt / mineralisch',56.4,9],['Sperrmüll / Siedlungsabfall',45.2,7],['Asbest / Dämmstoffe',12.5,2],['Übrige Fraktionen',30.5,5]];
-const ENTS=[['Höbel',321.0,52],['Settele',109.2,18],['Knettenbrech',89.8,14],['Schießler',72.1,12],['Geiger',17.3,3],['Weitere',11.2,2]];
-const OHNE=[['Krankenhaus (für Hubert Schmid)',40.0,30],['ZAK Kempten: 33 Fahrten × 1,2 t',39.6,29],['Schongau, Bauschutt (für Hubert Schmid)',25.0,19],['Oberbeuren, Baumischabfall (für Hubert Schmid)',20.0,15],['Baumischabfall ohne Beleg',10.0,7]];
-const KART=[['EDC-Karte 1',2471,27],['EDC-Karte 2',1760,19],['Einzelbelege ohne Karte',1576,17],['KF-DE 200',914,10],['Karte „Thomas Neidhardt“',777,8],['KF-DE 100',736,8],['Karte „Chef“',548,6],['Karte „Ersatz“',490,5]];
-const TANK=[['HEM Kaufbeuren',3631,39],['Aral Kaufbeuren',3024,32],['Tankpool Kaufbeuren',1300,14],['Aral Memmingen',218,2],['JET Pforzen',124,1],['Shell Jengen',104,1],['Alle anderen',910,10]];
-const FUHR=[['04.2025','KF-DE 200','VW Crafter'],['09.2025','KF-DE 250','Mercedes Sprinter'],['02.2026','KF-DE 175','Ford Transit'],['02.2026','KF-DE 12','Audi SQ8'],['04.2026','KF-DE 225','Humbaur 3,5-t-Kipper (Anhänger)'],['05.2026','KF-DE 125','Böcker Möbelaufzug'],['07.2026','KF-DE 75','Ford Transit Connect']];
-
-/* ---------- Bausteine ---------- */
-function columns(data,max,pk,call,ticks){
-  let h=ticks.map(([v,l])=>`<div class="gridl fi" style="--d:.6;bottom:${v/max*100}%"><span>${l}</span></div>`).join('')+'<div class="gridl base" style="bottom:0"></div>';
-  h+=data.map((v,i)=>`<div class="col${i===pk?' pk':''}"><i class="gh" style="height:${v/max*100}%;--d:${(.9+i*.085).toFixed(2)}"></i><span>${MON[i]}</span>${i===0?'<em>2025</em>':i===11?'<em>2026</em>':''}${i===pk?`<div class="call pop" style="--d:${(2.2+i*.085).toFixed(2)};bottom:calc(${v/max*100}% + 16px)">${call}</div>`:''}</div>`).join('');
+/* ---------- Bausteine (alle Zahlen kommen aus data.js) ---------- */
+function ticks(max){return [1,2,3,4].map(k=>[max*k/4,de(Math.round(max*k/4))])}
+function columns(data,pk,call){
+  const max=data[pk];
+  let h=ticks(max).map(([v,l])=>`<div class="gridl fi" style="--d:.6;bottom:${v/max*100}%"><span>${l}</span></div>`).join('')+'<div class="gridl base" style="bottom:0"></div>';
+  const yr=Object.fromEntries(D.jahr_idx);
+  h+=data.map((v,i)=>`<div class="col${i===pk?' pk':''}"><i class="gh" style="height:${v/max*100}%;--d:${(.9+i*.085).toFixed(2)}"></i><span>${MON[i]}</span>${yr[i]?`<em>${yr[i]}</em>`:''}${i===pk?`<div class="call pop" style="--d:${(2.2+i*.085).toFixed(2)};bottom:calc(${v/max*100}% + 16px)">${call}</div>`:''}</div>`).join('');
   return `<div class="plot">${h}</div>`;
 }
 function donut(){
   let off=0,s='';
-  FRAK.forEach(([n,v],i)=>{const l=v/620.6*1000;s+=`<circle class="seg" cx="50%" cy="50%" r="47%" pathLength="1000" stroke="${PAL[i]}" style="--d:${(.7+i*.22).toFixed(2)};stroke-dasharray:${Math.max(l-5,2).toFixed(1)} 1000;stroke-dashoffset:${(-off).toFixed(1)};filter:drop-shadow(0 0 10px ${PAL[i]})"/>`;off+=l});
+  D.frak.forEach((f,i)=>{const l=f.t/D.total*1000;s+=`<circle class="seg" cx="50%" cy="50%" r="47%" pathLength="1000" stroke="${PAL[i%7]}" style="--d:${(.7+i*.22).toFixed(2)};stroke-dasharray:${Math.max(l-5,2).toFixed(1)} 1000;stroke-dashoffset:${(-off).toFixed(1)};filter:drop-shadow(0 0 10px ${PAL[i%7]})"/>`;off+=l});
   return `<svg><circle cx="50%" cy="50%" r="47%" stroke="rgba(255,255,255,.07)"/>${s}</svg>`;
 }
 function areaChart(){
-  // Maße je Format
-  const w=PORT?960:1154,h=PORT?780:738,pl=92,pr=40,pt=PORT?130:120,pb=92,max=1095;
-  const X=i=>pl+(w-pl-pr)*i/20,Y=v=>pt+(h-pt-pb)*(1-v/max);
+  const LITER=D.liter_m,N=LITER.length,pkI=D.liter_peak,max=LITER[pkI];
+  const w=PORT?960:1154,h=PORT?780:738,pl=92,pr=40,pt=PORT?130:120,pb=92;
+  const X=i=>pl+(w-pl-pr)*i/(N-1),Y=v=>pt+(h-pt-pb)*(1-v/max);
   const pts=LITER.map((v,i)=>[X(i),Y(v)]);
-  // monotone kubische Interpolation
   const n=pts.length,dx=[],m=[],t=[];
   for(let i=0;i<n-1;i++){dx.push(pts[i+1][0]-pts[i][0]);m.push((pts[i+1][1]-pts[i][1])/dx[i])}
   t[0]=m[0];t[n-1]=m[n-2];
@@ -410,17 +444,18 @@ function areaChart(){
   for(let i=0;i<n-1;i++){if(m[i]===0){t[i]=t[i+1]=0}else{const a=t[i]/m[i],b=t[i+1]/m[i],s=a*a+b*b;if(s>9){const k=3/Math.sqrt(s);t[i]=k*a*m[i];t[i+1]=k*b*m[i]}}}
   let d=`M${pts[0][0]},${pts[0][1]}`;
   for(let i=0;i<n-1;i++){const x1=pts[i][0]+dx[i]/3,y1=pts[i][1]+t[i]*dx[i]/3,x2=pts[i+1][0]-dx[i]/3,y2=pts[i+1][1]-t[i+1]*dx[i]/3;d+=`C${x1.toFixed(1)},${y1.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)} ${pts[i+1][0].toFixed(1)},${pts[i+1][1].toFixed(1)}`}
-  const base=Y(0),ar=d+`L${X(20)},${base}L${X(0)},${base}Z`;
+  const base=Y(0),ar=d+`L${X(N-1)},${base}L${X(0)},${base}Z`;
   let g='';
-  [[274,'274'],[547,'547'],[821,'821'],[1095,'1.095']].forEach(([v,l])=>{g+=`<line x1="${pl-10}" x2="${w-pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(255,255,255,.09)"/><text x="${pl-22}" y="${Y(v)+7}" text-anchor="end">${l}</text>`});
+  ticks(max).forEach(([v,l])=>{g+=`<line x1="${pl-10}" x2="${w-pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(255,255,255,.09)"/><text x="${pl-22}" y="${Y(v)+7}" text-anchor="end">${l}</text>`});
   g+=`<line x1="${pl-10}" x2="${w-pr}" y1="${base}" y2="${base}" stroke="rgba(255,255,255,.3)"/>`;
-  let lab='';MON.forEach((mn,i)=>{if(PORT&&i%2)return;lab+=`<text x="${X(i)}" y="${base+34}" text-anchor="middle">${mn}</text>`});
-  lab+=`<text x="${X(0)}" y="${base+64}" text-anchor="middle" style="fill:#fff;font-weight:700">2025</text><text x="${X(11)}" y="${base+64}" text-anchor="middle" style="fill:#fff;font-weight:700">2026</text>`;
-  const dots=pts.map((p,i)=>`<circle class="pop" style="--d:${(1.1+i*.11).toFixed(2)};transform-box:fill-box;transform-origin:center" cx="${p[0]}" cy="${p[1]}" r="${i===17?11:6}" fill="${i===17?'#ffc74a':'#dff0ff'}" ${i===17?'filter="url(#gy)"':''}/>`).join('');
-  const px=pts[17][0],py=pts[17][1];
+  const step=(PORT||N>24)?2:1;
+  let lab='';MON.forEach((mn,i)=>{if(i%step)return;lab+=`<text x="${X(i)}" y="${base+34}" text-anchor="middle">${mn}</text>`});
+  D.jahr_idx.forEach(([i,y])=>{lab+=`<text x="${X(i)}" y="${base+64}" text-anchor="middle" style="fill:#fff;font-weight:700">${y}</text>`});
+  const dots=pts.map((p,i)=>`<circle class="pop" style="--d:${(1.1+i*.11).toFixed(2)};transform-box:fill-box;transform-origin:center" cx="${p[0]}" cy="${p[1]}" r="${i===pkI?11:6}" fill="${i===pkI?'#ffc74a':'#dff0ff'}" ${i===pkI?'filter="url(#gy)"':''}/>`).join('');
+  const px=Math.min(Math.max(pts[pkI][0],pl+140),w-pr-140),py=pts[pkI][1];
   return `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
   <defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f9dff" stop-opacity=".55"/><stop offset="1" stop-color="#4f9dff" stop-opacity="0"/></linearGradient>
-  <linearGradient id="lg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4f9dff"/><stop offset=".7" stop-color="#bfe0ff"/><stop offset=".85" stop-color="#ffc74a"/><stop offset="1" stop-color="#8fc4ff"/></linearGradient>
+  <linearGradient id="lg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#4f9dff"/><stop offset=".6" stop-color="#bfe0ff"/><stop offset="1" stop-color="#8fc4ff"/></linearGradient>
   <filter id="gl" x="-10%" y="-40%" width="120%" height="180%"><feGaussianBlur stdDeviation="9"/></filter>
   <filter id="gy" x="-300%" y="-300%" width="700%" height="700%"><feGaussianBlur stdDeviation="8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
   <g class="fi" style="--d:.5">${g}${lab}</g>
@@ -428,7 +463,7 @@ function areaChart(){
   <path class="draw" style="--d:.9" pathLength="1" d="${d}" fill="none" stroke="url(#lg)" stroke-width="12" filter="url(#gl)" opacity=".8"/>
   <path class="draw" style="--d:.9" pathLength="1" d="${d}" fill="none" stroke="url(#lg)" stroke-width="5" stroke-linecap="round"/>
   ${dots}
-  <g class="pop" style="--d:3.2;transform-box:fill-box;transform-origin:center bottom"><rect x="${px-128}" y="${py-76}" width="256" height="50" rx="25" fill="#ffc74a"/><text x="${px}" y="${py-42}" text-anchor="middle" style="fill:#1a1204;font-weight:700;font-size:25px">Jul 2026: 1.095 l</text></g>
+  <g class="pop" style="--d:3.2;transform-box:fill-box;transform-origin:center bottom"><rect x="${px-134}" y="${py-76}" width="268" height="50" rx="25" fill="#ffc74a"/><text x="${px}" y="${py-42}" text-anchor="middle" style="fill:#1a1204;font-weight:700;font-size:25px">${D.liter_peak_label}: ${de(Math.round(max))} l</text></g>
   </svg>`;
 }
 
@@ -437,59 +472,70 @@ const S=[];
 S[0]=`<img class="logo a z" style="--d:.5" src="logo.png">
 <div class="eb a" style="--d:1.3">Statistik</div>
 <h1><span class="a" style="--d:1.7">Das</span> <span class="a" style="--d:1.85">haben</span> <span class="a" style="--d:2">wir</span><br><span class="a yt" style="--d:2.5">geschafft.</span></h1>
-<div class="gl t a pill" style="--d:3.3;--k:2">Unsere Zahlen von <b>Februar 2025</b> bis <b>Oktober 2026</b></div>`;
+<div class="gl t a pill" style="--d:3.3;--k:2">Unsere Zahlen von <b>${D.von}</b> bis <b>${D.bis}</b></div>`;
 
-S[1]=hd('Entsorgt seit Februar 2025','Das haben wir gemeinsam bewegt')+`<div class="body">
-<div class="hero a z" style="--d:.7"><span class="num big wt">${cnt(620.6,1,.8,3.2)}</span><span class="unit bt">Tonnen</span></div>
+const jmax=Math.max(...D.jahre.map(j=>j.t));
+S[1]=hd(`Entsorgt seit ${D.von}`,'Das haben wir gemeinsam bewegt')+`<div class="body">
+<div class="hero a z" style="--d:.7"><span class="num big wt">${cnt(D.total,1,.8,3.2)}</span><span class="unit bt">Tonnen</span></div>
 <div class="row" style="margin-top:44px">
-<div class="gl t a kpi" style="--d:2.6;--k:1.6;--x:.06"><small>2025 (ab Februar)</small><b class="num wt">${cnt(204.7,1,2.8,2)} t</b><div class="tr"><i class="gw" style="--d:3;width:${204.7/415.9*100}%"></i></div></div>
-<div class="gl y t a kpi" style="--d:2.9;--k:-1.6;--x:.12"><small>2026 (bis Oktober)</small><b class="num yt">${cnt(415.9,1,3.1,2)} t</b><div class="tr"><i class="gw" style="--d:3.3;width:100%"></i></div></div>
+${D.jahre.map((j,i)=>{const last=i===D.jahre.length-1;return `<div class="gl${last?' y':''} t a kpi" style="--d:${2.6+i*.3};--k:${last?-1.6:1.6};--x:${.06*(i+1)}"><small>${j.l}</small><b class="num ${last?'yt':'wt'}">${cnt(j.t,1,2.8+i*.3,2)} t</b><div class="tr"><i class="gw" style="--d:${3+i*.3};width:${j.t/jmax*100}%"></i></div></div>`}).join('')}
+${D.ohne_datum?`<div class="gl t a kpi sm" style="--d:${2.6+D.jahre.length*.3};--k:1;--x:.2"><small>Zuschlag für fehlende Belege</small><b class="num wt">${cnt(D.ohne_datum,1,3.5,1.6)} t</b></div>`:''}
 </div></div>`;
 
-S[2]=hd('Tonnen pro Monat','Monat für Monat angepackt')+`<div class="body"><div class="gl t a chart" style="--d:.5;--k:.8">${columns(TONS,106.7,13,'Mär 2026: 106,7 t',[[27,'27'],[53,'53'],[80,'80'],[106.7,'107']])}</div></div>`;
+S[2]=hd('Tonnen pro Monat','Monat für Monat angepackt')+`<div class="body"><div class="gl t a chart" style="--d:.5;--k:.8">${columns(D.tons,D.tons_peak,`${D.tons_peak_label}: ${de(D.tons[D.tons_peak],1)} t`)}</div></div>`;
 
 S[3]=hd('Was wir entsorgen','Die größten Fraktionen')+`<div class="body">
-<div class="gl t a donut" style="--d:.5;--k:1.5">${donut()}<div class="mid"><b class="num wt">${cnt(620.6,1,.8,2.6)} t</b><small>belegt</small></div></div>
-<div class="list">${FRAK.map(([n,v,p],i)=>`<div class="gl a l li" style="--d:${(.9+i*.2).toFixed(2)};--x:${(i*.03).toFixed(2)};color:${PAL[i]}"><span class="dot"></span><span class="nm">${n}</span><span class="tr"><i class="gw" style="--d:${(1.2+i*.2).toFixed(2)};width:${v/257.5*100}%"></i></span><b class="num">${cnt(v,1,1+i*.2,1.6)} t</b><span class="pc">${p} %</span></div>`).join('')}</div></div>`;
+<div class="gl t a donut" style="--d:.5;--k:1.5">${donut()}<div class="mid"><b class="num wt">${cnt(D.total,1,.8,2.6)} t</b><small>gesamt</small></div></div>
+<div class="list">${D.frak.map((f,i)=>`<div class="gl a l li" style="--d:${(.9+i*.2).toFixed(2)};--x:${(i*.03).toFixed(2)};color:${PAL[i%7]}"><span class="dot"></span><span class="nm">${f.n}</span><span class="tr"><i class="gw" style="--d:${(1.2+i*.2).toFixed(2)};width:${f.t/D.frak[0].t*100}%"></i></span><b class="num">${cnt(f.t,1,1+i*.2,1.6)} t</b><span class="pc">${f.p} %</span></div>`).join('')}</div></div>`;
 
+const E0=D.ents[0];
 S[4]=hd('Wo wir entsorgen','Unsere Entsorger')+`<div class="body">
-<div class="gl y t a heroc" style="--d:.5;--k:1.4"><div class="ring"><svg><circle cx="50%" cy="50%" r="46%" stroke="rgba(255,255,255,.08)"/><circle class="seg" cx="50%" cy="50%" r="46%" pathLength="1000" stroke="#ffc74a" style="--d:1;stroke-dasharray:520 1000;filter:drop-shadow(0 0 12px #ffc74a)"/></svg><b class="num yt">52 %</b></div><div><h3>Höbel</h3><p class="num wt">${cnt(321.0,1,.9,2.4)} t</p></div></div>
-<div class="g6">${ENTS.slice(1).map(([n,v,p],i)=>`<div class="gl a et${i>2?' w':''}" style="--d:${(1+i*.22).toFixed(2)};--x:${(i*.04).toFixed(2)}"><div class="top">${n}<span>${p} %</span></div><b class="num wt">${cnt(v,1,1.1+i*.22,1.8)} t</b><div class="tr"><i class="gw" style="--d:${(1.4+i*.22).toFixed(2)};width:${v/321*100}%"></i></div></div>`).join('')}</div>
-<div class="gl a note" style="--d:2.6;--x:.2"><b class="num yt">${cnt(33,0,2.8,1.6)}</b><span>belegte Fahrten zu ZAK Kempten · je Fahrt rund 1,2 t, also etwa 40 t (geschätzt)</span></div></div>`;
+<div class="gl y t a heroc" style="--d:.5;--k:1.4"><div class="ring"><svg><circle cx="50%" cy="50%" r="46%" stroke="rgba(255,255,255,.08)"/><circle class="seg" cx="50%" cy="50%" r="46%" pathLength="1000" stroke="#ffc74a" style="--d:1;stroke-dasharray:${(E0.t/D.total*1000).toFixed(0)} 1000;filter:drop-shadow(0 0 12px #ffc74a)"/></svg><b class="num yt" style="font-size:64px">Nr. 1</b></div><div><h3>${E0.n}</h3><p class="num wt">${cnt(E0.t,1,.9,2.4)} t</p></div></div>
+<div class="g6">${D.ents.slice(1).map((e,i)=>`<div class="gl a et" style="--d:${(1+i*.22).toFixed(2)};--x:${(i*.04).toFixed(2)}"><div class="top">${e.n}<span>${e.sub}</span></div><b class="num wt">${cnt(e.t,1,1.1+i*.22,1.8)} t</b><div class="tr"><i class="gw" style="--d:${(1.4+i*.22).toFixed(2)};width:${e.t/E0.t*100}%"></i></div></div>`).join('')}</div></div>`;
 
-S[5]=hd('Dazu geschätzt · Mengen ohne Beleg','Und es war sogar noch mehr')+`<div class="body">
-<div class="gl t a bars" style="--d:.5;--k:.8">${OHNE.map(([n,v,p],i)=>`<div class="br"><span class="nm fi" style="--d:${(.9+i*.2).toFixed(2)}">${n}</span><span class="tr"><i class="gw" style="--d:${(1+i*.2).toFixed(2)};width:${v/40*100}%"></i></span><b class="num fi" style="--d:${(1.2+i*.2).toFixed(2)}">${cnt(v,1,1+i*.2,1.6)} t</b><span class="pc fi" style="--d:${(1.4+i*.2).toFixed(2)}">${p} %</span></div>`).join('')}</div>
-<div class="eq"><div class="gl a" style="--d:3.6"><small>belegt</small><b class="num wt">620,6 t</b></div><span class="op a" style="--d:4">+</span><div class="gl a" style="--d:4.2;--x:.05"><small>geschätzt</small><b class="num wt">${cnt(134.6,1,4.3,1.8)} t</b></div><span class="op a" style="--d:5.4">=</span><div class="gl y t a z sum" style="--d:5.8;--k:1.6;--x:.1"><b class="num yt">rund ${cnt(755,0,6,2.6)} t</b></div></div></div>`;
+const SC=D.schiessler;
+S[5]=hd('Schrott, Metall und Altreifen','Bei Schießler verwertet')+`<div class="body sch">
+<div class="gl y t a schh" style="--d:.5;--k:1.3"><small>Insgesamt</small><b class="num yt">${cnt(SC.t,1,.7,2.8)} t</b><span>${cnt(SC.anlieferungen,0,1.6,2)} Wiegescheine</span></div>
+<div class="schr">
+<div class="row">
+<div class="gl a" style="--d:1.4"><small>Metall und Schrott</small><b class="num wt">${cnt(SC.metall,1,1.5,2)} t</b></div>
+<div class="gl a" style="--d:1.7;--x:.05"><small>Elektrogeräte</small><b class="num wt">${cnt(SC.elektro,1,1.8,1.6)} t</b></div>
+<div class="gl a" style="--d:2;--x:.1"><small>Altreifen</small><b class="num wt">${cnt(SC.reifen,1,2.1,1.6)} t</b><em>${SC.reifen_stk?`plus ${SC.reifen_stk} Reifen nach Stück`:''}</em></div>
+</div>
+<div class="gl t a bars" style="--d:2.8;--k:.8;--x:.15"><div class="cap">Am meisten abgegeben</div>${SC.top.map(([n,v],i)=>`<div class="br"><span class="nm fi" style="--d:${(3.2+i*.2).toFixed(2)}">${n}</span><span class="tr"><i class="gw" style="--d:${(3.3+i*.2).toFixed(2)};width:${Math.max(v/SC.top[0][1]*100,1.5)}%"></i></span><b class="num fi" style="--d:${(3.5+i*.2).toFixed(2)}">${cnt(v,1,3.3+i*.2,1.6)} t</b></div>`).join('')}</div>
+</div></div>`;
 
+const C=D.container,TR=D.trenn;
 S[6]=hd('Container und Trennquote','Organisiert und getrennt')+`<div class="body">
-<div class="c74"><div class="l a z" style="--d:.6"><span class="num n yt">${cnt(74,0,.7,2.6)}</span></div>
-<div class="r"><h3 class="a" style="--d:1.2">Container gefüllt</h3><div class="cap a" style="--d:1.9;margin-top:26px"><b>${cnt(125,0,2,1.8)}</b> Einsätze</div>
-<div class="row"><div class="gl a" style="--d:2.2"><b class="num wt">${cnt(46,0,2.3,1.6)}</b><span>gestellt</span></div><div class="gl a" style="--d:2.45;--x:.05"><b class="num wt">${cnt(28,0,2.55,1.6)}</b><span>getauscht</span></div><div class="gl a" style="--d:2.7;--x:.1"><b class="num wt">${cnt(51,0,2.8,1.6)}</b><span>abgeholt</span></div></div></div></div>
+<div class="c74"><div class="l a z" style="--d:.6"><span class="num n yt">${cnt(C.gefuellt,0,.7,2.6)}</span></div>
+<div class="r"><h3 class="a" style="--d:1.2">Container gefüllt</h3><div class="cap a" style="--d:1.9;margin-top:26px"><b>${cnt(C.einsaetze,0,2,1.8)}</b> Einsätze</div>
+<div class="row"><div class="gl a" style="--d:2.2"><b class="num wt">${cnt(C.gestellt,0,2.3,1.6)}</b><span>gestellt</span></div><div class="gl a" style="--d:2.45;--x:.05"><b class="num wt">${cnt(C.getauscht,0,2.55,1.6)}</b><span>getauscht</span></div><div class="gl a" style="--d:2.7;--x:.1"><b class="num wt">${cnt(C.abgeholt,0,2.8,1.6)}</b><span>abgeholt</span></div></div></div></div>
 <div class="gl t a split" style="--d:4.4;--k:.8;--x:.15"><div class="cap">So liefern wir an (belegte Tonnen)</div>
-<div class="stripe"><div style="flex:294.8"><i class="gw" style="--d:5;background:linear-gradient(90deg,#4f9dff,#a8d0ff)">48 %</i></div><div style="flex:302.9"><i class="gw" style="--d:5.5;background:linear-gradient(90deg,#aab8d6,#dbe4f6)">49 %</i></div><div style="flex:22.9"><i class="gw" style="--d:6;background:linear-gradient(90deg,#ff8a4a,#ffb27a);padding:0"></i></div></div>
-<div class="lg"><span class="fi" style="--d:5.2;color:#4f9dff"><em>sortenrein getrennt: 294,8 t</em></span><span class="fi" style="--d:5.7;color:#c3cfe8"><em>gemischt: 302,9 t</em></span><span class="fi" style="--d:6.2;color:#ff9a5c"><em>gefährlich: 22,9 t</em></span></div>
+<div class="stripe"><div style="flex:${TR.sortenrein}"><i class="gw" style="--d:5;background:linear-gradient(90deg,#4f9dff,#a8d0ff)">${TR.p_sortenrein} %</i></div><div style="flex:${TR.gemischt}"><i class="gw" style="--d:5.5;background:linear-gradient(90deg,#aab8d6,#dbe4f6)">${TR.p_gemischt} %</i></div><div style="flex:${TR.gefaehrlich}"><i class="gw" style="--d:6;background:linear-gradient(90deg,#ff8a4a,#ffb27a);padding:0"></i></div></div>
+<div class="lg"><span class="fi" style="--d:5.2;color:#4f9dff"><em>sortenrein getrennt: ${de(TR.sortenrein,1)} t</em></span><span class="fi" style="--d:5.7;color:#c3cfe8"><em>gemischt: ${de(TR.gemischt,1)} t</em></span><span class="fi" style="--d:6.2;color:#ff9a5c"><em>gefährlich: ${de(TR.gefaehrlich,1)} t</em></span></div>
 <p class="fi" style="--d:6.8">Sortenrein: Altholz A I–III, Metall, Bauschutt, Elektro, Papier, Glas, Gips, Reifen</p></div></div>`;
 
-S[7]=hd('Getankt seit Februar 2025 · Liter pro Monat','Immer in Bewegung')+`<div class="body">
+S[7]=hd(`Getankt seit ${D.von} · Liter pro Monat`,'Immer in Bewegung')+`<div class="body">
 <div class="gl t a area" style="--d:.5;--k:.8">${areaChart()}</div>
-<div class="side"><div class="gl y t a tot" style="--d:.9;--k:-1.5"><small>Gesamt</small><b class="num yt">${cnt(9311,0,1,3)}</b><span>Liter</span></div>
-<div class="gl a fu" style="--d:3.6;--x:.05">Diesel<b class="num">${cnt(8351,0,3.7,1.8)} l</b></div><div class="gl a fu" style="--d:3.85;--x:.1">Benzin<b class="num">${cnt(923,0,3.95,1.8)} l</b></div><div class="gl a fu" style="--d:4.1;--x:.15">AdBlue<b class="num">${cnt(38,0,4.2,1.8)} l</b></div></div></div>`;
+<div class="side"><div class="gl y t a tot" style="--d:.9;--k:-1.5"><small>Gesamt</small><b class="num yt">${cnt(D.liter,0,1,3)}</b><span>Liter</span></div>
+<div class="gl a fu" style="--d:3.6;--x:.05">Diesel<b class="num">${cnt(D.diesel,0,3.7,1.8)} l</b></div><div class="gl a fu" style="--d:3.85;--x:.1">Benzin<b class="num">${cnt(D.benzin,0,3.95,1.8)} l</b></div><div class="gl a fu" style="--d:4.1;--x:.15">AdBlue<b class="num">${cnt(D.adblue,0,4.2,1.8)} l</b></div></div></div>`;
 
-S[8]=hd('Wer tankt wie viel','Liter je Tankkarte')+`<div class="body">${KART.map(([n,v,p],i)=>`<div class="gl${i===0?' y':''} a tk${i===0?' y':''}" style="--d:${(.6+i*.2).toFixed(2)};--x:${(i*.03).toFixed(2)}"><div><div class="rk">NR. ${i+1}</div><div class="top">${n}<span>${p} %</span></div></div><b class="num ${i===0?'yt':'wt'}">${cnt(v,0,.7+i*.2,1.8)}<small>l</small></b><div class="tr"><i class="gw" style="--d:${(1+i*.2).toFixed(2)};width:${v/2471*100}%"></i></div></div>`).join('')}</div>`;
+S[8]=hd('Wer tankt wie viel','Liter je Tankkarte')+`<div class="body">${D.karten.map((k,i)=>`<div class="gl${i===0?' y':''} a tk${i===0?' y':''}" style="--d:${(.6+i*.2).toFixed(2)};--x:${(i*.03).toFixed(2)}"><div><div class="rk">NR. ${i+1}</div><div class="top">${k.n}<span>${k.p} %</span></div></div><b class="num ${i===0?'yt':'wt'}">${cnt(k.l,0,.7+i*.2,1.8)}<small>l</small></b><div class="tr"><i class="gw" style="--d:${(1+i*.2).toFixed(2)};width:${k.l/D.karten[0].l*100}%"></i></div></div>`).join('')}</div>`;
 
 S[9]=hd('Wo wir tanken','Unsere Tankstellen')+`<div class="body">
-<div class="gl t a tubes" style="--d:.5;--k:1.1">${TANK.slice(0,3).map(([n,v,p],i)=>`<div class="tb${i===1?' y':''}"><b class="num ${i===1?'yt':'wt'}">${cnt(v,0,.9+i*.3,2.4)} l</b><span class="pc">${p} %</span><div class="glass"><i class="gh" style="--d:${(.9+i*.3).toFixed(2)};height:${v/3631*94}%;animation-duration:2.4s"></i></div><span class="nm">${n}</span></div>`).join('')}</div>
-<div class="chips">${TANK.slice(3).map(([n,v,p],i)=>`<div class="gl a chp" style="--d:${(2.4+i*.22).toFixed(2)};--x:${(i*.04).toFixed(2)}"><div class="top">${n}<span>${p} %</span></div><b class="num wt">${cnt(v,0,2.5+i*.22,1.6)}<small>l</small></b></div>`).join('')}</div></div>`;
+<div class="gl t a tubes" style="--d:.5;--k:1.1">${D.tankstellen.slice(0,3).map((s,i)=>`<div class="tb${i===1?' y':''}"><b class="num ${i===1?'yt':'wt'}">${cnt(s.l,0,.9+i*.3,2.4)} l</b><span class="pc">${s.p} %</span><div class="glass"><i class="gh" style="--d:${(.9+i*.3).toFixed(2)};height:${s.l/D.tankstellen[0].l*94}%;animation-duration:2.4s"></i></div><span class="nm">${s.n}</span></div>`).join('')}</div>
+<div class="chips">${D.tankstellen.slice(3).map((s,i)=>`<div class="gl a chp" style="--d:${(2.4+i*.22).toFixed(2)};--x:${(i*.04).toFixed(2)}"><div class="top">${s.n}<span>${s.p} %</span></div><b class="num wt">${cnt(s.l,0,2.5+i*.22,1.6)}<small>l</small></b></div>`).join('')}</div></div>`;
 
-S[10]=hd('Wann kam was dazu?','Unser Fuhrpark ist gewachsen')+`<div class="body"><div class="tl"><div class="line ${PORT?'gh':'gw'}" style="--d:.7;animation-duration:4.6s;animation-timing-function:linear"></div>
-${FUHR.map(([d,k,v],i)=>`<div class="ev"><div class="dt yt a" style="--d:${(.9+i*.6).toFixed(2)}">${d}</div><div class="nd pop" style="--d:${(.9+i*.6).toFixed(2)}"></div><div class="gl a" style="--d:${(1.1+i*.6).toFixed(2)};--x:${(i*.03).toFixed(2)}"><div class="plate"><span>${k}</span></div><div class="vh">${v}</div></div></div>`).join('')}</div>
-<div class="fn a" style="--d:6.2">Dazu zwei VW Caddy (KF-DE 100 und KF-DE 150), Datum nicht in den Unterlagen</div></div>`;
+const FZ=D.fuhrpark,fs=Math.min(.6,4.4/FZ.length);
+S[10]=hd('Wann kam was dazu?','Unser Fuhrpark ist gewachsen')+`<div class="body"><div class="tl" style="--n:${FZ.length}"><div class="line ${PORT?'gh':'gw'}" style="--d:.7;animation-duration:${(fs*FZ.length+.4).toFixed(1)}s;animation-timing-function:linear"></div>
+${FZ.map((f,i)=>`<div class="ev"><div class="dt yt a" style="--d:${(.9+i*fs).toFixed(2)}">${f.seit}</div><div class="nd pop" style="--d:${(.9+i*fs).toFixed(2)}"></div><div class="gl a" style="--d:${(1.1+i*fs).toFixed(2)};--x:${(i*.03).toFixed(2)}"><div class="plate"><span>${f.kz}</span></div><div class="vh">${f.name}</div></div></div>`).join('')}</div>
+<div class="fn a" style="--d:6.4">Von einem Fahrzeug auf ${FZ.length} in ${Math.max(1,(+D.bis.slice(-4))-(+FZ[0].seit.slice(-4)))} Jahren</div></div>`;
 
 S[11]=`<div class="eb a" style="--d:.4">Das haben wir geschafft</div>
-<div class="row"><div class="gl t a fin" style="--d:.9;--k:1.5"><small>Rund</small><b class="num wt">${cnt(755,0,1.1,3)}</b><span class="bt">Tonnen.</span></div>
-<div class="gl y t a fin" style="--d:1.4;--k:-1.5"><small>Getankt</small><b class="num yt">${cnt(9311,0,1.6,3)}</b><span class="yt">Liter.</span></div></div>
+<div class="row"><div class="gl t a fin" style="--d:.9;--k:1.5"><small>Entsorgt</small><b class="num wt">${cnt(D.total,1,1.1,3)}</b><span class="bt">Tonnen.</span></div>
+<div class="gl y t a fin" style="--d:1.4;--k:-1.5"><small>Getankt</small><b class="num yt">${cnt(D.liter,0,1.6,3)}</b><span class="yt">Liter.</span></div></div>
 <h1 class="a z" style="--d:4.6">Danke ans <span class="yt">Team.</span></h1>
-<p class="a" style="--d:6.2">620,6 Tonnen sind mit Rechnungen und Wiegescheinen belegt, der Rest ist geschätzt.<br>Einige Belege fehlen noch. Stand 14.11.2026.</p>
+<p class="a" style="--d:6.2">${de(D.belegt,1)} Tonnen sind mit Rechnungen und Wiegescheinen belegt, ${de(D.geschaetzt,1)} Tonnen sind geschätzt.<br>Einige Belege fehlen noch. Stand ${D.stand}.</p>
 <img class="logo a" style="--d:7" src="logo.png">`;
 
 const root=document.getElementById('scenes');
@@ -497,6 +543,7 @@ const scenes=S.map((html,i)=>{const s=document.createElement('section');s.classN
   s.style.setProperty('--s',ST[i]);s.style.setProperty('--e',i===S.length-1?9999:ST[i]+LEN[i]*BAR);s.innerHTML=html;root.appendChild(s);return s});
 const counters=[...document.querySelectorAll('.cnt')].map(el=>({el,to:+el.dataset.to,dec:+el.dataset.dec,at:+el.dataset.at,dur:+el.dataset.dur,s:ST[+el.closest('.scene').id.slice(1)-1],last:''}));
 const $=id=>document.getElementById(id);
+$('ft').textContent=`Platzwerk Allgäu · Statistik · Stand ${D.stand}`;
 const stage=$('stage'),orbs=['o1','o2','o3','o4','o5','o6','ring1','ring2'].map($);
 const sin=Math.sin,cos=Math.cos,clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 const eo=x=>1-Math.pow(1-x,4);

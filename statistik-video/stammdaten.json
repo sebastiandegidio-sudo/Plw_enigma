@@ -1,0 +1,12 @@
+{
+  "_hinweis": "Feste Angaben von Sebastian, die Vorrang vor der Tabelle haben.",
+  "tonnen_je_zak_fahrt": 1.2,
+  "fahrzeuge_korrektur": {
+    "KF-DE 100": {"seit": "2022", "name": "VW Caddy (weiß)"},
+    "KF-DE 150": {"seit": "09.2025", "name": "VW Caddy (rot)"},
+    "KF-DE 225": {"name": "Humbaur 3,5-t-Kipper (Anhänger)"}
+  },
+  "fahrzeuge_zusatz": [
+    {"kz": "KF-DE 12", "name": "Audi SQ8", "seit": "02.2026"}
+  ]
+}
