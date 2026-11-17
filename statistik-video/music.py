@@ -1,6 +1,6 @@
 """Erzeugt die Musik-Unterlage (selbst synthetisiert, keine fremden Samples).
-Aufruf: python3 music.py ausgabe.wav
-100 BPM, 64 Takte = 153,6 s, Szenenwechsel liegen genau auf Taktgrenzen."""
+Aufruf: python3 music.py ausgabe.wav 4,5,4,...   (Szenenlängen in Takten)
+100 BPM, ein Takt = 2,4 s, Szenenwechsel liegen genau auf Taktgrenzen."""
 import sys
 import numpy as np
 from scipy.signal import butter, sosfilt, fftconvolve
@@ -9,10 +9,11 @@ from scipy.io import wavfile
 SR = 44100
 BEAT = 0.6
 BAR = 4 * BEAT
-BARS = 64
+SCENES = [int(x) for x in sys.argv[2].split(',')]  # Szenenlängen in Takten, kommen aus index.html (siehe build.sh)
+BARS = sum(SCENES)
+FIN = BARS - SCENES[-1]  # ab hier Finale ohne Schlagzeug
 N = int(SR * BARS * BAR)
 rng = np.random.default_rng(7)
-SCENES = [4, 5, 5, 6, 5, 6, 6, 5, 5, 5, 6, 6]
 STARTS = np.cumsum([0] + SCENES[:-1])  # in Takten
 
 # Akkorde je Takt (Am – F – C – G): (Bass, Flächen-Töne) als MIDI-Noten
@@ -57,7 +58,7 @@ for b in range(BARS):
     dur = BAR + 1.4
     n = int(dur * SR); t = np.arange(n) / SR
     e = env(n, 0.9, 1.4)
-    lvl = 0.7 if b < 4 else (1.25 if b >= 58 else 1.0)
+    lvl = 0.7 if b < 4 else (1.25 if b >= FIN else 1.0)
     for m in notes + ([notes[0] - 12] if b >= 4 else []):
         for ch, det in ((0, -0.06), (1, 0.06), (0, 0.11), (1, -0.11)):
             fr = f(m + det)
@@ -70,7 +71,7 @@ pad = lp(pad, 2200)
 PAT = [0, 2, 1, 3, 2, 3, 1, 2]
 for b in range(4, BARS):
     _, notes = CH[b % 4]
-    hi = 24 if b >= 58 else 12
+    hi = 24 if b >= FIN else 12
     lvl = 0.55 if b < 9 else 1.0
     for i in range(8):
         m = notes[PAT[i] % len(notes)] + hi
@@ -92,7 +93,7 @@ for k in range(1, 5):
 # ---------- Bass ----------
 for b in range(4, BARS):
     root, _ = CH[b % 4]
-    hits = [(0, 1.7)] if b >= 58 else [(0, 1.0), (1.5, 0.45), (2.5, 0.9), (3.5, 0.4)]
+    hits = [(0, 1.7)] if b >= FIN else [(0, 1.0), (1.5, 0.45), (2.5, 0.9), (3.5, 0.4)]
     for bt, ln in hits:
         n = int(ln * BEAT * SR); t = np.arange(n) / SR
         fr = f(root - (12 if root > 40 else 0) + 12) / 2
@@ -101,7 +102,7 @@ for b in range(4, BARS):
 
 # ---------- Schlagzeug ----------
 def drums_on(b):
-    return 9 <= b < 58 and b not in (25, 26, 44)
+    return 9 <= b < FIN and b not in (25, 26, 44)
 
 for b in range(BARS):
     if not drums_on(b):

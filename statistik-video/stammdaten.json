@@ -4,9 +4,7 @@
   "fahrzeuge_korrektur": {
     "KF-DE 100": {"seit": "2022", "name": "VW Caddy (weiß)"},
     "KF-DE 150": {"seit": "09.2025", "name": "VW Caddy (rot)"},
-    "KF-DE 225": {"name": "Humbaur 3,5-t-Kipper (Anhänger)"}
+    "KF-DE 225": {"name": "Humbaur 3,5-t-Kipper"}
   },
-  "fahrzeuge_zusatz": [
-    {"kz": "KF-DE 12", "name": "Audi SQ8", "seit": "02.2026"}
-  ]
+  "nie_zeigen": ["KF-DE 12", "Audi", "SQ8"]
 }
